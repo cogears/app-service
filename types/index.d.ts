@@ -1,10 +1,11 @@
 export * from './common';
 export * from './lang';
 export * from './storage';
-import { Task } from './common';
+import { Task, TaskHandle } from './common';
 import { MysqlConfig } from './storage';
 
 export default class AppContext {
     installStorage(config: MysqlConfig): Promise<any>;
-    start(task: Task): void;
+    schedule(task: Task, delay?: number): TaskHandle;
+    schedulePeriodTask(task: Task, period: number): TaskHandle;
 }

@@ -109,3 +109,13 @@ export interface PageResult<T> {
     size: number;
     list: T[];
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+////  修饰器                                                              ////
+///////////////////////////////////////////////////////////////////////////////
+export function entity(options?: any): Function
+export function id(options: DataFieldOptions): Function;
+export function column(options: DataFieldOptions): Function;
+export function repository(entityClass: Class<any>): Function
+export function sql(sql?: string): Function;

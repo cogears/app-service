@@ -1,5 +1,4 @@
-import { Class, DataField, DataFieldOptions, DataSchema, PageRequest, Repository } from "types";
-
+import { Class, DataField, DataFieldOptions, DataSchema, PageRequest, Repository as IRepository, TaskContext } from "types";
 export interface StorageDriver {
     getConnection(): Promise<StorageConnection>;
 
@@ -40,6 +39,14 @@ export interface StorageRepositoryFactory {
     encode(value: any): string;
 }
 
+export class Repository<T> {
+    private context: TaskContext;
+
+    constructor(context: TaskContext) {
+        this.context = context;
+    }
+}
+
 interface EntityInfo {
     clazz: Class<any>;
     fields: DataField[];
@@ -56,7 +63,7 @@ export interface DataMethod {
 }
 
 export interface DataSchemaInfo<T> extends DataSchema<T> {
-    repositoryClass: Class<Repository<T>>;
+    repositoryClass: Class<IRepository<T>>;
     methods: DataMethod[];
 }
 

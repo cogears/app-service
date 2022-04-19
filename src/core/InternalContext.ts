@@ -21,8 +21,12 @@ export default class InternalContext {
         await this._storage.initialize();
     }
 
-    start(task: Task) {
-        this._taskManager.schedule(task);
+    schedule(task: Task, delay?: number) {
+        return this._taskManager.schedule(task, delay);
+    }
+
+    schedulePeriodTask(task: Task, period: number) {
+        return this._taskManager.schedulePeriodTask(task, period)
     }
 
     dispose() {
