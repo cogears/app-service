@@ -12,9 +12,10 @@ export type MysqlConfig = {
 }
 
 export type DataSchema<T> = {
-    name: string;
-    fields: DataField[];
-    entityClass?: Class<T>;
+    name: string,
+    fields: DataField[],
+    writeable: boolean,
+    entityClass?: Class<T>,
 }
 
 export type DataField = { name: string } & DataFieldOptions;
