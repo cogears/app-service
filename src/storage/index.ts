@@ -1,4 +1,4 @@
-import { Class, DataField, DataFieldOptions, DataSchema, PageRequest, Repository as IRepository, TaskContext } from "types";
+import { Class, DataField, DataFieldOptions, DataSchema, DataSchemaOptions, PageRequest, Repository as IRepository, TaskContext } from "types";
 export interface StorageDriver {
     getConnection(): Promise<StorageConnection>;
 
@@ -49,6 +49,7 @@ export class Repository<T> {
 
 interface EntityInfo {
     clazz: Class<any>;
+    writable: boolean;
     fields: DataField[];
 }
 
@@ -67,8 +68,11 @@ export interface DataSchemaInfo<T> extends DataSchema<T> {
     methods: DataMethod[];
 }
 
-export function entity(options?: any) {
+export function entity(options?: DataSchemaOptions) {
     return function (entityClass: Class<any>) {
+        if (options) {
+            registerEntity(entityClass, options)
+        }
     }
 }
 
@@ -100,10 +104,19 @@ const binding: Map<any, any> = new Map();
 const entities: Map<any, EntityInfo> = new Map();
 const repositories: Map<any, RepositoryInfo> = new Map();
 
+function registerEntity(entityClass: Class<any>, options: DataSchemaOptions) {
+    let info = entities.get(entityClass);
+    if (!info) {
+        info = { clazz: entityClass, writable: false, fields: [] };
+        entities.set(entityClass, info);
+    }
+    info.writable = options.writable
+}
+
 function registerField(entityClass: Class<any>, name: string, options: DataFieldOptions, isPrimaryKey: boolean = false) {
     let info = entities.get(entityClass);
     if (!info) {
-        info = { clazz: entityClass, fields: [] };
+        info = { clazz: entityClass, writable: false, fields: [] };
         entities.set(entityClass, info);
     }
     let field: DataField = Object.assign({ name }, options);
@@ -130,6 +143,7 @@ export function getSchemas(): DataSchemaInfo<any>[] {
         if (entity) {
             let info: DataSchemaInfo<any> = {
                 name: entityClass.name,
+                writable: entity.writable,
                 fields: entity.fields,
                 entityClass: entityClass,
                 repositoryClass: repositoryClass,

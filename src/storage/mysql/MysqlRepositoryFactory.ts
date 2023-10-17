@@ -10,12 +10,14 @@ export default class MysqlRepositoryFactory implements StorageRepositoryFactory 
     }
 
     async createRepository<T>(connection: StorageConnection, schema: DataSchema<T>): Promise<MysqlRepository<T>> {
-        try {
-            let fields = await this.loadTableDescription(connection, schema.name);
-            await connection.query(generator.getAlter(schema, fields));
-        } catch (e) {
-            console.info(`表${schema.name}不存在，开始创建...`);
-            await connection.query(generator.getCreate(schema));
+        if(schema.writable){
+            try {
+                let fields = await this.loadTableDescription(connection, schema.name);
+                await connection.query(generator.getAlter(schema, fields));
+            } catch (e) {
+                console.info(`表${schema.name}不存在，开始创建...`);
+                await connection.query(generator.getCreate(schema));
+            }
         }
         return new MysqlRepository<T>(schema);
     }

@@ -12,13 +12,16 @@ export type MysqlConfig = {
 }
 
 export type DataSchema<T> = {
-    name: string;
-    fields: DataField[];
-    entityClass?: Class<T>;
+    name: string,
+    fields: DataField[],
+    writable: boolean,
+    entityClass?: Class<T>,
+}
+export type DataSchemaOptions = {
+    writable: boolean,
 }
 
 export type DataField = { name: string } & DataFieldOptions;
-
 export type DataFieldOptions = {
     type: DataFieldType;
     auto?: boolean;         // 自增/当前时间
