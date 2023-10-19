@@ -45,9 +45,9 @@ export default class TaskManager {
         return this.context.storage.getConnection()
     }
 
-    getRepository(name: string): Repository<any> {
+    getRepository(context: TaskContext, name: string): Repository<any> {
         let schema = this.context.storage.getSchema(name)
-        return new schema.repositoryClass(this);
+        return new schema.repositoryClass(context);
     }
 
     schedule(task: Task, delay: number = 0): TaskHandle {

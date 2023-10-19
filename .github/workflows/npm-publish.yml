@@ -56,5 +56,5 @@ jobs:
           path: dist
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GH_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           

@@ -12,7 +12,7 @@ export default class TaskContext implements ITaskContext {
     }
 
     getRepository(name: string): Repository<any> {
-        return this.mgr.getRepository(name);
+        return this.mgr.getRepository(this, name);
     }
 
     async getStorageConnection(): Promise<StorageConnection> {
