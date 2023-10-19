@@ -49,6 +49,7 @@ export class Repository<T> {
 
 interface EntityInfo {
     clazz: Class<any>;
+    name: string;
     writable: boolean;
     fields: DataField[];
 }
@@ -107,16 +108,16 @@ const repositories: Map<any, RepositoryInfo> = new Map();
 function registerEntity(entityClass: Class<any>, options: DataSchemaOptions) {
     let info = entities.get(entityClass);
     if (!info) {
-        info = { clazz: entityClass, writable: false, fields: [] };
+        info = { clazz: entityClass, name: entityClass.name, writable: false, fields: [] };
         entities.set(entityClass, info);
     }
-    info.writable = options.writable
+    Object.assign(info, options)
 }
 
 function registerField(entityClass: Class<any>, name: string, options: DataFieldOptions, isPrimaryKey: boolean = false) {
     let info = entities.get(entityClass);
     if (!info) {
-        info = { clazz: entityClass, writable: false, fields: [] };
+        info = { clazz: entityClass, name: entityClass.name, writable: false, fields: [] };
         entities.set(entityClass, info);
     }
     let field: DataField = Object.assign({ name }, options);
@@ -142,7 +143,7 @@ export function getSchemas(): DataSchemaInfo<any>[] {
         let entity = entities.get(entityClass);
         if (entity) {
             let info: DataSchemaInfo<any> = {
-                name: entityClass.name,
+                name: entity.name,
                 writable: entity.writable,
                 fields: entity.fields,
                 entityClass: entityClass,

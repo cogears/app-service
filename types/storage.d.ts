@@ -18,7 +18,8 @@ export type DataSchema<T> = {
     entityClass?: Class<T>,
 }
 export type DataSchemaOptions = {
-    writable: boolean,
+    name?: string,
+    writable?: boolean,
 }
 
 export type DataField = { name: string } & DataFieldOptions;
@@ -117,7 +118,7 @@ export interface PageResult<T> {
 ///////////////////////////////////////////////////////////////////////////////
 ////  修饰器                                                              ////
 ///////////////////////////////////////////////////////////////////////////////
-export function entity(options?: any): Function
+export function entity(options?: DataSchemaOptions): Function
 export function id(options: DataFieldOptions): Function;
 export function column(options: DataFieldOptions): Function;
 export function repository(entityClass: Class<any>): Function
