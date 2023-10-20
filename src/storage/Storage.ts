@@ -26,6 +26,9 @@ export default class Storage {
         if (schema.fields.length > 0) {
             await this.repositoryFactory.register(connection, schema);
             this.schemas[schema.name] = schema;
+            if (schema.entityClass) {
+                this.schemas[schema.entityClass.name] = schema;
+            }
         } else {
             throw new Error('数据模型未定义字段:' + schema.name);
         }
