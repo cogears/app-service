@@ -6,14 +6,14 @@ import TaskHandle from "./TaskHandle";
 
 export default class TaskManager {
     private readonly context: InternalContext;
-    private readonly taskList: Task[] = [];
+    private readonly taskList: TaskHandle[] = [];
     private running: boolean = true;
 
     constructor(context: InternalContext) {
         this.context = context;
     }
 
-    private activate(task: Task) {
+    private activate(task: TaskHandle) {
         if (this.running) {
             this.taskList.push(task);
             this.notify();
@@ -27,17 +27,20 @@ export default class TaskManager {
         }
     }
 
-    private async execute(task: Task) {
-        let context = new TaskContext(this);
-        try {
-            await context.beginTransaction();
-            await task(context);
-            await context.commit();
-        } catch (e) {
-            console.error(e);
-            await context.fallback();
-        } finally {
-            await context.dispose();
+    private async execute(taskHandle: TaskHandle) {
+        if (taskHandle.isValid()) {
+            let context = new TaskContext(this);
+            try {
+                await context.beginTransaction();
+                await taskHandle.task(context);
+                await context.commit();
+            } catch (e) {
+                console.error(e);
+                await context.fallback();
+            } finally {
+                await context.dispose();
+                taskHandle.dispatch(TaskHandle.COMPLETE)
+            }
         }
     }
 
@@ -54,16 +57,20 @@ export default class TaskManager {
         if (!this.running) {
             throw new Error('任务管理器已停止运行')
         }
-        let instance = setTimeout(this.activate.bind(this, task), delay);
-        return new TaskHandle(instance, false);
+        let taskHandle = new TaskHandle(task)
+        let instance = setTimeout(this.activate.bind(this, taskHandle), delay);
+        taskHandle.setTimer(instance, false)
+        return taskHandle
     }
 
     schedulePeriodTask(task: Task, period: number): TaskHandle {
         if (!this.running) {
             throw new Error('任务管理器已停止运行')
         }
-        let instance = setInterval(this.activate.bind(this, task), period);
-        return new TaskHandle(instance, true);
+        let taskHandle = new TaskHandle(task)
+        let instance = setInterval(this.activate.bind(this, taskHandle), period);
+        taskHandle.setTimer(instance, true)
+        return taskHandle
     }
 
     dispose() {

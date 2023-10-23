@@ -1,19 +1,33 @@
-import { TaskHandle as ITaskHandle } from "types";
+import { EventDispatcher } from "src/common";
+import { TaskHandle as ITaskHandle, Task } from "types";
 
-export default class TaskHandle implements ITaskHandle {
-    private readonly instance: NodeJS.Timer;
-    private readonly isPeriod: boolean;
+export default class TaskHandle extends EventDispatcher implements ITaskHandle {
+    static readonly COMPLETE: string = 'complete'
+    private timer!: NodeJS.Timer;
+    private isPeriod!: boolean;
+    private valid: boolean = true
+    readonly task: Task;
 
-    constructor(instance: NodeJS.Timer, isPeriod: boolean) {
-        this.instance = instance;
-        this.isPeriod = isPeriod;
+    constructor(task: Task) {
+        super()
+        this.task = task
+    }
+
+    setTimer(timer: NodeJS.Timer, isPeriod: boolean) {
+        this.timer = timer
+        this.isPeriod = isPeriod
+    }
+
+    isValid() {
+        return this.valid
     }
 
     cancel() {
+        this.valid = false
         if (this.isPeriod) {
-            clearInterval(this.instance);
+            clearInterval(this.timer);
         } else {
-            clearTimeout(this.instance);
+            clearTimeout(this.timer);
         }
     }
 }
