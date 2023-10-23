@@ -1,4 +1,4 @@
-import { EventDispatcher } from "src/common";
+import { EventDispatcher } from "../../common";
 import { TaskHandle as ITaskHandle, Task } from "types";
 
 export default class TaskHandle extends EventDispatcher implements ITaskHandle {
