@@ -5,6 +5,7 @@ import { Task, TaskHandle } from './common';
 import { MysqlConfig } from './storage';
 
 export default class AppContext {
+    installLog(logPath?: string): void;
     installStorage(config: MysqlConfig): Promise<any>;
     schedule(task: Task, delay?: number): TaskHandle;
     schedulePeriodTask(task: Task, period: number): TaskHandle;

@@ -50,6 +50,7 @@ export default class MysqlDriver implements StorageDriver {
         }
         this.connections.clear();
         this.pool.end();
+        console.info('释放mysql链接池')
     }
 
     private onConnectionCreated(connection: PoolConnection) {

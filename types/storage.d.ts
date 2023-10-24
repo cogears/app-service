@@ -9,6 +9,8 @@ export type MysqlConfig = {
     user: string;
     password: string;
     database: string;
+    connectionLimit?: number,
+    queueLimit?: number,
 }
 
 export type DataSchema<T> = {

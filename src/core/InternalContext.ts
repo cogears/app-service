@@ -1,6 +1,7 @@
 import { MysqlConfig, Task } from 'types';
 import Storage from "../storage/Storage";
 import TaskManager from './task/TaskManager';
+import { LogFactory } from '../common';
 
 export default class InternalContext {
     private _taskManager: TaskManager;
@@ -19,6 +20,10 @@ export default class InternalContext {
     async installStorage(config: MysqlConfig) {
         this._storage = new Storage(config);
         await this._storage.initialize();
+    }
+
+    installLog(logPath: string = '') {
+        LogFactory(logPath)
     }
 
     schedule(task: Task, delay?: number) {
