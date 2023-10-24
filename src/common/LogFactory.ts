@@ -23,6 +23,7 @@ export default function (logPath: string = '') {
     function log(level: string, ...args: any[]) {
         const logfile = path.join(logPath, today());
         let time = now()
+        args = args.map(obj => typeof obj == 'object' ? JSON.stringify(obj) : obj)
         let text = `${time} ${level} - ` + args.join(' ') + '\n';
         fs.writeFile(logfile, text, { flag: 'a' }, function () { })
         return text;
