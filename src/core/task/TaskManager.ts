@@ -20,10 +20,12 @@ export default class TaskManager {
         }
     }
 
-    private notify() {
-        if (this.taskList.length > 0) {
-            let task = this.taskList.shift();
-            task && this.execute(task);
+    notify() {
+        if (this.context.ready) {
+            if (this.taskList.length > 0) {
+                let task = this.taskList.shift();
+                task && this.execute(task);
+            }
         }
     }
 
@@ -68,7 +70,11 @@ export default class TaskManager {
             throw new Error('任务管理器已停止运行')
         }
         let taskHandle = new TaskHandle(task)
-        let instance = setInterval(this.activate.bind(this, taskHandle), period);
+        let instance = setInterval(() => {
+            if (this.context.ready) {
+                this.activate(taskHandle)
+            }
+        }, period);
         taskHandle.setTimer(instance, true)
         return taskHandle
     }
