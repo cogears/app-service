@@ -32,6 +32,7 @@ export interface TaskContext {
 
 export interface TaskHandle {
     cancel(): void;
+    addEventListener(event: 'complete', listener: EventListener): void;
 }
 
 export interface Task {

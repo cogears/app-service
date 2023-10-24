@@ -34,8 +34,8 @@ export default class TaskManager {
                 await context.beginTransaction();
                 await taskHandle.task(context);
                 await context.commit();
-            } catch (e) {
-                console.error(e);
+            } catch (e: any) {
+                console.error(e.stack);
                 await context.fallback();
             } finally {
                 await context.dispose();
