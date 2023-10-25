@@ -1,4 +1,4 @@
-import { DataSchema, PageRequest } from "types";
+import { DataSchema, PageRequest, RepeatSql } from "types";
 import { StorageConnection, StorageRepository } from "..";
 import generator from "./MysqlSqlGenerator";
 
@@ -55,6 +55,14 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
         return list.map(item => this.transform(item));
     }
 
+    generateRepeat(): MysqlRepeatSql<T> {
+        return new MysqlRepeatSql<T>(this.schema)
+    }
+
+    async submitRepeat(connection: StorageConnection, repeat: MysqlRepeatSql<T>): Promise<void> {
+        return await connection.query(repeat.done())
+    }
+
     private transform(data: any): T {
         let instance: any = this.schema.entityClass ? new this.schema.entityClass() : {};
         for (let field of this.schema.fields) {
@@ -62,5 +70,21 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
         }
         return instance as T;
     }
+}
 
+class MysqlRepeatSql<T> implements RepeatSql<T>{
+    private readonly schema: DataSchema<T>;
+    private buffer: string[] = []
+
+    constructor(schema: DataSchema<T>) {
+        this.schema = schema;
+    }
+
+    push(entity: T): void {
+        this.buffer.push(generator.getReplaceValue(this.schema, entity))
+    }
+
+    done() {
+        return generator.getReplace(this.schema) + this.buffer.join(',')
+    }
 }

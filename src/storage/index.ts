@@ -1,4 +1,4 @@
-import { Class, DataField, DataFieldOptions, DataSchema, DataSchemaOptions, PageRequest, Repository as IRepository, TaskContext } from "types";
+import { Class, DataField, DataFieldOptions, DataSchema, DataSchemaOptions, Repository as IRepository, PageRequest, RepeatSql, TaskContext } from "types";
 export interface StorageDriver {
     getConnection(): Promise<StorageConnection>;
 
@@ -31,6 +31,10 @@ export interface StorageRepository<T> {
     count(connection: StorageConnection, where: string, values: Array<any>): Promise<number>;
 
     select(connection: StorageConnection, where: string, pageRequest?: PageRequest, values?: Array<any>): Promise<T[]>;
+
+    generateRepeat(): RepeatSql<T>;
+
+    submitRepeat(connection: StorageConnection, repeat: RepeatSql<T>): Promise<void>;
 }
 
 export interface StorageRepositoryFactory {

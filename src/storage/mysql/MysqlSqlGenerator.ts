@@ -76,6 +76,34 @@ class MysqlSqlGenerator {
         return insertSql;
     }
 
+    getReplace(schema: DataSchema<any>): string {
+        let names: string[] = [];
+        for (let i = 0; i < schema.fields.length; i++) {
+            let field: DataField = schema.fields[i];
+            if (field.auto || field.update) {
+                continue;
+            }
+            names.push(`\`${field.name}\``);
+        }
+        let sql = `REPLACE INTO \`${schema.name}\``;
+        if (names.length > 0) {
+            sql += ` (${names.join(',')}) VALUES `;
+        }
+        return sql;
+    }
+
+    getReplaceValue(schema: DataSchema<any>, entity: any): string {
+        let values: string[] = [];
+        for (let i = 0; i < schema.fields.length; i++) {
+            let field: DataField = schema.fields[i];
+            if (field.auto || field.update) {
+                continue;
+            }
+            values.push(this.encode(entity[field.name]));
+        }
+        return `(${values.join(',')})`;
+    }
+
     getDelete(schema: DataSchema<any>, where?: string): string {
         let sql = `DELETE FROM \`${schema.name}\``;
         if (where) {

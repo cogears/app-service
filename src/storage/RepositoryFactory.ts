@@ -1,4 +1,4 @@
-import { EntitySubject, PageRequest, Specification } from "types";
+import { EntitySubject, PageRequest, Specification, RepeatSql } from "types";
 import { DataSchemaInfo, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
 import { criteriaBuilder, predicates } from "./Helper";
 import * as Methods from "./Methods";
@@ -81,6 +81,15 @@ export default class RepositoryFactory {
             let where = specification ? self.executeSpecification(schema, specification) : '';
             return await storage.select(connection, where, pageRequest, []);
         };
+
+        schema.repositoryClass.prototype.generateRepeat = function () {
+            return storage.generateRepeat()
+        }
+
+        schema.repositoryClass.prototype.submitRepeat = async function (repeat: RepeatSql<T>) {
+            let connection = await this.context.getStorageConnection();
+            return await storage.submitRepeat(connection, repeat)
+        }
     }
 
     private buildMethods<T>(storage: StorageRepository<T>, schema: DataSchemaInfo<T>): void {

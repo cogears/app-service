@@ -55,6 +55,13 @@ export class Repository<T> {
     select(specification?: Specification<T>, pageRequest?: PageRequest): Promise<T[]>;
 
     count(specification?: Specification<T>): Promise<number>;
+
+    generateRepeat(): RepeatSql<T>;
+    submitRepeat(repeat: RepeatSql<T>): Promise<void>;
+}
+
+export interface RepeatSql<T> {
+    push(entity: T): void;
 }
 
 export interface Specification<T> {

@@ -35,6 +35,9 @@ export default function (logPath: string = '') {
         let origin = console[key];
         // @ts-ignore
         console[key] = (...args) => {
+            if (key == 'log') {
+                return
+            }
             let text = log(key, ...args);
             origin.apply(console, [text]);
         }
