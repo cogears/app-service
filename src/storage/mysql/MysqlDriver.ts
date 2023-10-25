@@ -9,7 +9,8 @@ const DEFAULT = {
     port: 3306,
     connectionLimit: 20,
     queueLimit: 20,
-    timezone: '+08:00'
+    timezone: '+08:00',
+    supportBigNumbers: true,
 };
 
 export default class MysqlDriver implements StorageDriver {
