@@ -1,6 +1,6 @@
 {
   "name": "@cogears/app-service",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "application service",
   "main": "dist/index.js",
   "types": "types/index.d.ts",

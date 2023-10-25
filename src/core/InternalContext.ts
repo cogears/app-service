@@ -49,8 +49,8 @@ export default class InternalContext {
     }
 
     dispose() {
-        if (this.storage) {
-            this.storage.dispose();
+        if (this._storage) {
+            this._storage.dispose();
         }
         this._taskManager.dispose();
     }
