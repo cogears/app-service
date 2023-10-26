@@ -96,7 +96,7 @@ export default class RepositoryFactory {
         for (let i = 0; i < schema.methods.length; i++) {
             let method = schema.methods[i];
             if (method.sql) {
-                schema.repositoryClass.prototype[method.name] = async function (values: Array<any>) {
+                schema.repositoryClass.prototype[method.name] = async function (...values: Array<any>) {
                     let connection = await this.context.getStorageConnection();
                     return connection.query(method.sql, values);
                 }
