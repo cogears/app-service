@@ -61,7 +61,7 @@ export class Repository<T> {
 }
 
 export interface RepeatSql<T> {
-    push(entity: T): void;
+    push(entity: T): boolean;
 }
 
 export interface Specification<T> {

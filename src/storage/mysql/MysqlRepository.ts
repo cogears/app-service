@@ -72,19 +72,27 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
     }
 }
 
+const BUFFER_LIMIT = 1024 * 1024 * 0.995
 class MysqlRepeatSql<T> implements RepeatSql<T>{
     private readonly schema: DataSchema<T>;
-    private buffer: string[] = []
+    private readonly replace: string = ''
+    private readonly buffer: string[] = []
+    private bufferSize: number = 0
 
     constructor(schema: DataSchema<T>) {
         this.schema = schema;
+        this.replace = generator.getReplace(this.schema)
+        this.bufferSize = this.replace.length
     }
 
-    push(entity: T): void {
-        this.buffer.push(generator.getReplaceValue(this.schema, entity))
+    push(entity: T): boolean {
+        let data = generator.getReplaceValue(this.schema, entity)
+        this.buffer.push(data)
+        this.bufferSize += data.length + 1
+        return this.bufferSize >= BUFFER_LIMIT
     }
 
     done() {
-        return generator.getReplace(this.schema) + this.buffer.join(',')
+        return this.replace + this.buffer.join(',')
     }
 }
