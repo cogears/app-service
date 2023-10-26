@@ -62,6 +62,7 @@ export class Repository<T> {
 }
 
 export interface RepeatSql<T> {
+    bufferSize: number;
     push(entity: T): boolean;
 }
 

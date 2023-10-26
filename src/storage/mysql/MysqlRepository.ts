@@ -77,19 +77,23 @@ class MysqlRepeatSql<T> implements RepeatSql<T>{
     private readonly schema: DataSchema<T>;
     private readonly replace: string = ''
     private readonly buffer: string[] = []
-    private bufferSize: number = 0
+    private _bufferSize: number = 0
 
     constructor(schema: DataSchema<T>) {
         this.schema = schema;
         this.replace = generator.getReplace(this.schema)
-        this.bufferSize = this.replace.length
+        this._bufferSize = this.replace.length
+    }
+
+    get bufferSize() {
+        return this._bufferSize
     }
 
     push(entity: T): boolean {
         let data = generator.getReplaceValue(this.schema, entity)
         this.buffer.push(data)
-        this.bufferSize += data.length + 1
-        return this.bufferSize >= BUFFER_LIMIT
+        this._bufferSize += data.length + 1
+        return this._bufferSize >= BUFFER_LIMIT
     }
 
     done() {
