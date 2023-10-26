@@ -2,13 +2,21 @@ import { escape } from "mysql";
 import { DataField, DataSchema, PageOrder, PageRequest } from "types";
 import * as MysqlField from "./MysqlField";
 
+function getFieldDefine(field: DataField, isPrimaryKey: boolean = false) {
+    let text = MysqlField[field.type](field, isPrimaryKey)
+    if (field.comment) {
+        text += ` COMMENT '${field.comment}'`
+    }
+    return text
+}
+
 class MysqlSqlGenerator {
     encode(value: any): string {
         return escape(value);
     }
 
     getCreate(schema: DataSchema<any>): string {
-        let fields = schema.fields.map((field, index) => MysqlField[field.type](field, index == 0));
+        let fields = schema.fields.map((field, index) => getFieldDefine(field, index == 0));
         fields.push(`PRIMARY KEY (\`${schema.fields[0].name}\`)`);
         return `CREATE TABLE \`${schema.name}\` (${fields.join(',')}) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC`;
     }
@@ -17,9 +25,9 @@ class MysqlSqlGenerator {
         let diff = schema.fields.map((field, index) => {
             if (index > 0) {
                 if (originFields.includes(field.name)) {
-                    return 'MODIFY ' + MysqlField[field.type](field);
+                    return 'MODIFY ' + getFieldDefine(field);
                 } else {
-                    return 'ADD ' + MysqlField[field.type](field);
+                    return 'ADD ' + getFieldDefine(field);
                 }
             }
         });

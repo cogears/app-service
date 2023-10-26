@@ -8,6 +8,14 @@ export function int(field: DataField, isPrimaryKey: boolean = false): string {
     }
 }
 
+export function bigint(field: DataField, isPrimaryKey: boolean = false): string {
+    if (isPrimaryKey && field.auto) {
+        return `\`${field.name}\` BIGINT(20) NOT NULL AUTO_INCREMENT`;
+    } else {
+        return `\`${field.name}\` BIGINT(20) NOT NULL DEFAULT 0`;
+    }
+}
+
 export function string(field: DataField, isPrimaryKey: boolean = false): string {
     let len = field.len || 32;
     if (isPrimaryKey) {
@@ -34,6 +42,17 @@ export function timestamp(field: DataField): string {
     }
     return `\`${field.name}\` TIMESTAMP NULL DEFAULT NULL`;
 }
+
+export function date(field: DataField): string {
+    if (field.update) {
+        return `\`${field.name}\` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`;
+    }
+    if (field.auto) {
+        return `\`${field.name}\` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP`;
+    }
+    return `\`${field.name}\` DATE NULL DEFAULT NULL`;
+}
+
 
 export function datetime(field: DataField): string {
     if (field.update) {

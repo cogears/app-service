@@ -32,9 +32,10 @@ export type DataFieldOptions = {
     len?: number;
     m?: number;
     d?: number;
+    comment?: string;
 }
 
-export type DataFieldType = "int" | "string" | "boolean" | "text" | "timestamp" | "datetime" | "decimal" | "double";
+export type DataFieldType = "int" | "bigint" | "string" | "boolean" | "text" | "timestamp" | "date" | "datetime" | "decimal" | "double";
 
 ///////////////////////////////////////////////////////////////////////////////
 ////  应用接口                                                              ////
