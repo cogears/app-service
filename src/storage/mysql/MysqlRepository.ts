@@ -16,7 +16,7 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
     async insert(connection: StorageConnection, entity: T): Promise<T> {
         let result = await connection.query(generator.getInsert(this.schema, entity));
         if (result.insertId > 0) {
-            let key = this.schema.fields[0].name;
+            let key = this.schema.fields[0].alias;
             // @ts-ignore
             entity[key] = result.insertId;
         }
@@ -34,7 +34,7 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
     async save(connection: StorageConnection, entity: T): Promise<T> {
         let result = await connection.query(generator.getSave(this.schema, entity));
         if (result.insertId > 0) {
-            let key = this.schema.fields[0].name;
+            let key = this.schema.fields[0].alias;
             // @ts-ignore
             entity[key] = result.insertId;
         }
@@ -52,7 +52,7 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
 
     async select(connection: StorageConnection, where: string, pageRequest?: PageRequest, values?: Array<any>): Promise<T[]> {
         let list: any[] = await connection.query(generator.getSelect(this.schema, where, pageRequest), values);
-        return list.map(item => this.transform(item));
+        return list.map(item => this.transformDataToEntity(item));
     }
 
     generateRepeat(): MysqlRepeatSql<T> {
@@ -63,10 +63,10 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
         return await connection.query(repeat.done())
     }
 
-    private transform(data: any): T {
+    private transformDataToEntity(data: any): T {
         let instance: any = this.schema.entityClass ? new this.schema.entityClass() : {};
         for (let field of this.schema.fields) {
-            instance[field.name] = data[field.name];
+            instance[field.alias] = data[field.name];
         }
         return instance as T;
     }

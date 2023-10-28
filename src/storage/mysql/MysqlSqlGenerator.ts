@@ -44,12 +44,12 @@ class MysqlSqlGenerator {
         let values: string[] = [];
         for (let i = 0; i < schema.fields.length; i++) {
             let field: DataField = schema.fields[i];
-            if (Reflect.has(entity, field.name)) {
-                if ((field.auto || field.update) && (entity[field.name] == undefined || entity[field.name] == null)) {
+            if (Reflect.has(entity, field.alias)) {
+                if ((field.auto || field.update) && (entity[field.alias] == undefined || entity[field.alias] == null)) {
                     continue;
                 }
                 names.push(`\`${field.name}\``);
-                values.push(this.encode(entity[field.name]));
+                values.push(this.encode(entity[field.alias]));
             }
         }
         let sql = `INSERT INTO \`${schema.name}\``;
@@ -66,14 +66,14 @@ class MysqlSqlGenerator {
             if (field.auto || field.update) {
                 continue;
             }
-            if (Reflect.has(entity, field.name)) {
-                settings.push(`\`${field.name}\` = ${this.encode(entity[field.name])}`);
+            if (Reflect.has(entity, field.alias)) {
+                settings.push(`\`${field.name}\` = ${this.encode(entity[field.alias])}`);
             }
         }
         if (settings.length > 0) {
-            let key = schema.fields[0].name;
-            let value = this.encode(entity[key]);
-            return `UPDATE \`${schema.name}\` SET ${settings.join(',')} WHERE \`${key}\` = ${value}`;
+            let keyField = schema.fields[0]
+            let value = this.encode(entity[keyField.alias]);
+            return `UPDATE \`${schema.name}\` SET ${settings.join(',')} WHERE \`${keyField.name}\` = ${value}`;
         }
     }
 
@@ -111,7 +111,7 @@ class MysqlSqlGenerator {
             if (field.auto || field.update) {
                 continue;
             }
-            values.push(this.encode(entity[field.name]));
+            values.push(this.encode(entity[field.alias]));
         }
         return `(${values.join(',')})`;
     }
@@ -136,9 +136,11 @@ class MysqlSqlGenerator {
     getSelect(schema: DataSchema<any>, where: string, pageRequest?: PageRequest): string {
         let fields = '*';
         if (pageRequest && pageRequest.fields) {
-            fields = pageRequest.fields.join(',');
+            fields = pageRequest.fields
+                .map(alias => schema.fields.find(field => field.alias == alias)?.name)
+                .filter(name => name).join(',')
         }
-        let order = (pageRequest && pageRequest.orders) ? getOrders(pageRequest.orders) : false;
+        let order = (pageRequest && pageRequest.orders) ? getOrders(schema, pageRequest.orders) : false;
         let sql = `FROM \`${schema.name}\``;
         if (where) {
             sql += ' WHERE ' + where;
@@ -163,8 +165,15 @@ class MysqlSqlGenerator {
     }
 }
 
-function getOrders(orders: PageOrder[]) {
-    return orders.map(order => `\`${order.name}\` ${order.asc ? 'ASC' : 'DESC'}`).join(',');
+function getOrders(schema: DataSchema<any>, orders: PageOrder[]) {
+    return orders.map(order => (
+        {
+            asc: order.asc,
+            name: schema.fields.find(field => field.alias == order.name)?.name
+        }
+    ))
+        .filter(item => item.name)
+        .map(order => `\`${order.name}\` ${order.asc ? 'ASC' : 'DESC'}`).join(',');
 }
 
 export default new MysqlSqlGenerator()
