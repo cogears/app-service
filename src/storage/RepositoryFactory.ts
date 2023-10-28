@@ -1,6 +1,6 @@
 import { EntitySubject, PageRequest, Specification, RepeatSql } from "types";
 import { DataSchemaInfo, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
-import { criteriaBuilder, predicates } from "./Helper";
+import { criteriaBuilder, predicates, CriteriaBufferImpl } from "./Helper";
 import * as Methods from "./Methods";
 
 function flatten(array: Array<any>): Array<any> {
@@ -103,7 +103,7 @@ export default class RepositoryFactory {
             } else {
                 let key = Object.keys(Methods).find(key => method.name.startsWith(key));
                 if (key) {
-                    let { where, argumentsLength } = this.parseQuery(schema, method.name.substr(key.length));
+                    let { where, argumentsLength } = this.parseQuery(schema, method.name.substring(key.length));
                     //@ts-ignore
                     schema.repositoryClass.prototype[method.name] = Methods[key](storage, where, argumentsLength);
                 }
@@ -140,7 +140,7 @@ export default class RepositoryFactory {
                 f.name = f.name[0].toLowerCase() + f.name.substr(1);
             }
             argumentsLength += f.length;
-            return schema.fields.some(item => item.name == f.name);
+            return schema.fields.some(item => item.alias == f.name);
         });
         if (!foundAll) {
             throw new Error(`无法在${schema.name}存储上查询${query}，请检查字段是否匹配`);
@@ -148,7 +148,7 @@ export default class RepositoryFactory {
         let where = this.executeSpecification(schema, function (criteriaBuilder, subject) {
             return fields.reduce((buf, field) => {
                 //@ts-ignore
-                let condition = subject[field.name][field.operator]();
+                let condition = subject[field.alias][field.operator]();
                 if (buf) {
                     return field.and ? criteriaBuilder.and(buf, condition) : criteriaBuilder.or(buf, condition);
                 } else {
@@ -173,8 +173,9 @@ export default class RepositoryFactory {
         let proxyObject: ProxyObject = Proxy.revocable({}, {
             get: (_, name: string) => {
                 if (!fields[name]) {
-                    if (schema.fields.some(item => item.name == name)) {
-                        fields[name] = this.createField(name);
+                    let define = schema.fields.find(item => item.alias == name)
+                    if (define) {
+                        fields[name] = this.createField(define.name);
                     } else {
                         throw new Error(`找不到${schema.name}.${name}`);
                     }
@@ -198,7 +199,7 @@ export default class RepositoryFactory {
                     return (...args: Array<any>) => {
                         args = args.map(arg => this.driverRepositoryFactory.encode(arg));
                         //@ts-ignore
-                        return '`' + name + '`' + predicates[operator](...args);
+                        return new CriteriaBufferImpl('`' + name + '`' + predicates[operator](...args))
                     }
                 } else {
                     throw new Error('不支持的方法: ' + operator);
@@ -207,4 +208,3 @@ export default class RepositoryFactory {
         })
     }
 }
-

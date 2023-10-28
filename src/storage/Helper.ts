@@ -1,15 +1,27 @@
-import { CriteriaBuilder, EntityFieldPredicate } from "types";
+import { CriteriaBuilder, EntityFieldPredicate, CriteriaBuffer } from "types";
+
+export class CriteriaBufferImpl implements CriteriaBuffer {
+    private readonly content: string;
+    private readonly left?: CriteriaBufferImpl
+    private readonly right?: CriteriaBufferImpl
+
+    constructor(content: string, left?: CriteriaBufferImpl, right?: CriteriaBufferImpl) {
+        this.content = content
+        this.left = left
+        this.right = right
+    }
+}
 
 export const criteriaBuilder: CriteriaBuilder = {
-    and(left: string, right: string): string {
-        return `(${left} AND ${right})`;
+    and(left: CriteriaBufferImpl, right: CriteriaBufferImpl): CriteriaBufferImpl {
+        return new CriteriaBufferImpl('AND', left, right)
     },
-    or(left: string, right: string): string {
-        return `(${left} OR ${right})`;
+    or(left: CriteriaBufferImpl, right: CriteriaBufferImpl): CriteriaBufferImpl {
+        return new CriteriaBufferImpl('OR', left, right)
     }
 };
 
-export const predicates: EntityFieldPredicate = {
+export const predicates = {
     equal(value: string): string {
         return ` = ${value === undefined ? '?' : value}`;
     },

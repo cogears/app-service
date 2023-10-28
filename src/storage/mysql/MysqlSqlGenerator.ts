@@ -18,7 +18,11 @@ class MysqlSqlGenerator {
     getCreate(schema: DataSchema<any>): string {
         let fields = schema.fields.map((field, index) => getFieldDefine(field, index == 0));
         fields.push(`PRIMARY KEY (\`${schema.fields[0].name}\`)`);
-        return `CREATE TABLE \`${schema.name}\` (${fields.join(',')}) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC`;
+        let sql = `CREATE TABLE \`${schema.name}\` (${fields.join(',')}) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC`;
+        if (schema.comment) {
+            sql += ` COMMENT='${schema.comment}'`
+        }
+        return sql
     }
 
     getAlter(schema: DataSchema<any>, originFields: string[]): string {

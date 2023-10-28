@@ -18,21 +18,24 @@ export type DataSchema<T> = {
     fields: DataField[],
     writable: boolean,
     entityClass?: Class<T>,
+    comment?: string,
 }
 export type DataSchemaOptions = {
     name?: string,
     writable?: boolean,
+    comment?: string,
 }
 
-export type DataField = { name: string } & DataFieldOptions;
+export type DataField = { name: string, alias: string, } & DataFieldOptions;
 export type DataFieldOptions = {
-    type: DataFieldType;
-    auto?: boolean;         // 自增/当前时间
-    update?: boolean;       // 更新时间
-    len?: number;
-    m?: number;
-    d?: number;
-    comment?: string;
+    type: DataFieldType,
+    name?: string,
+    auto?: boolean,         // 自增/当前时间
+    update?: boolean,       // 更新时间
+    len?: number,
+    m?: number,
+    d?: number,
+    comment?: string,
 }
 
 export type DataFieldType = "int" | "bigint" | "string" | "boolean" | "text" | "timestamp" | "date" | "datetime" | "decimal" | "double";
@@ -71,9 +74,9 @@ export interface Specification<T> {
 }
 
 export interface CriteriaBuilder {
-    and(left: string, right: string): string;
+    and(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer;
 
-    or(left: string, right: string): string;
+    or(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer;
 }
 
 export type EntitySubject<T> = {
@@ -81,29 +84,32 @@ export type EntitySubject<T> = {
 }
 
 export interface EntityFieldPredicate {
-    equal(value: any): string;
+    equal(value: any): CriteriaBuffer;
 
-    between(min: any, max: any): string;
+    between(min: any, max: any): CriteriaBuffer;
 
-    lessThan(value: any): string;
+    lessThan(value: any): CriteriaBuffer;
 
-    greaterThan(value: any): string;
+    greaterThan(value: any): CriteriaBuffer;
 
-    isNull(): string;
+    isNull(): CriteriaBuffer;
 
-    isNotNull(): string;
+    isNotNull(): CriteriaBuffer;
 
-    notNull(): string;
+    notNull(): CriteriaBuffer;
 
-    like(value: any): string;
+    like(value: any): CriteriaBuffer;
 
-    notLike(value: any): string;
+    notLike(value: any): CriteriaBuffer;
 
-    not(value: any): string;
+    not(value: any): CriteriaBuffer;
 
-    in(value: any): string;
+    in(value: any): CriteriaBuffer;
 
-    notIn(value: any): string;
+    notIn(value: any): CriteriaBuffer;
+}
+
+export interface CriteriaBuffer{
 }
 
 export interface PageRequest {

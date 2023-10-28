@@ -56,6 +56,7 @@ interface EntityInfo {
     name: string;
     writable: boolean;
     fields: DataField[];
+    comment?: string;
 }
 
 interface RepositoryInfo {
@@ -118,13 +119,13 @@ function registerEntity(entityClass: Class<any>, options: DataSchemaOptions) {
     Object.assign(info, options)
 }
 
-function registerField(entityClass: Class<any>, name: string, options: DataFieldOptions, isPrimaryKey: boolean = false) {
+function registerField(entityClass: Class<any>, alias: string, options: DataFieldOptions, isPrimaryKey: boolean = false) {
     let info = entities.get(entityClass);
     if (!info) {
         info = { clazz: entityClass, name: entityClass.name, writable: false, fields: [] };
         entities.set(entityClass, info);
     }
-    let field: DataField = Object.assign({ name }, options);
+    let field: DataField = Object.assign({ alias, name: alias }, options);
     if (isPrimaryKey) {
         info.fields.unshift(field);
     } else {
@@ -149,6 +150,7 @@ export function getSchemas(): DataSchemaInfo<any>[] {
             let info: DataSchemaInfo<any> = {
                 name: entity.name,
                 writable: entity.writable,
+                comment: entity.comment,
                 fields: entity.fields,
                 entityClass: entityClass,
                 repositoryClass: repositoryClass,
