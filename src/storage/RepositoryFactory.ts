@@ -98,7 +98,12 @@ export default class RepositoryFactory {
             if (method.sql) {
                 schema.repositoryClass.prototype[method.name] = async function (...values: Array<any>) {
                     let connection = await this.context.getStorageConnection();
-                    return connection.query(method.sql, values);
+                    let list = await connection.query(method.sql, values);
+                    if (method.sql.toLowerCase().startsWith('select')) {
+                        return storage.transform(list)
+                    } else {
+                        return list
+                    }
                 }
             } else {
                 let key = Object.keys(Methods).find(key => method.name.startsWith(key));

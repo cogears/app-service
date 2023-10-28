@@ -35,6 +35,8 @@ export interface StorageRepository<T> {
     generateRepeat(): RepeatSql<T>;
 
     submitRepeat(connection: StorageConnection, repeat: RepeatSql<T>): Promise<void>;
+
+    transform(list: any[]): T[]
 }
 
 export interface StorageRepositoryFactory {

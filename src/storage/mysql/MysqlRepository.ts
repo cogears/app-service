@@ -63,10 +63,19 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
         return await connection.query(repeat.done())
     }
 
+    transform(list: any[]): T[] {
+        return list.map(item => this.transformDataToEntity(item));
+    }
+
     private transformDataToEntity(data: any): T {
         let instance: any = this.schema.entityClass ? new this.schema.entityClass() : {};
-        for (let field of this.schema.fields) {
-            instance[field.alias] = data[field.name];
+        for (let k in data) {
+            let field = this.schema.fields.find(item => item.name == k)
+            if (field) {
+                instance[field.alias] = data[k]
+            } else {
+                instance[k] = data[k]
+            }
         }
         return instance as T;
     }
