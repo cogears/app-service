@@ -148,7 +148,7 @@ export default class RepositoryFactory {
         let where = this.executeSpecification(schema, function (criteriaBuilder, subject) {
             return fields.reduce((buf, field) => {
                 //@ts-ignore
-                let condition = subject[field.alias][field.operator]();
+                let condition = subject[field.name][field.operator]();
                 if (buf) {
                     return field.and ? criteriaBuilder.and(buf, condition) : criteriaBuilder.or(buf, condition);
                 } else {
