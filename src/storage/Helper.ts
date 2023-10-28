@@ -1,23 +1,38 @@
-import { CriteriaBuilder, EntityFieldPredicate, CriteriaBuffer } from "types";
+import { CriteriaBuffer, CriteriaBuilder } from "types";
 
-export class CriteriaBufferImpl implements CriteriaBuffer {
-    private readonly content: string;
-    private readonly left?: CriteriaBufferImpl
-    private readonly right?: CriteriaBufferImpl
+export class CriteriaConnector implements CriteriaBuffer {
+    private readonly connector: string;
+    private readonly left: CriteriaBuffer
+    private readonly right: CriteriaBuffer
 
-    constructor(content: string, left?: CriteriaBufferImpl, right?: CriteriaBufferImpl) {
-        this.content = content
+    constructor(connector: string, left: CriteriaBuffer, right: CriteriaBuffer) {
+        this.connector = connector
         this.left = left
         this.right = right
+    }
+
+    toString() {
+        return '(' + this.left.toString() + ' ' + this.connector + ' ' + this.right.toString() + ')'
+    }
+}
+
+export class CriteriaCondition implements CriteriaBuffer {
+    private readonly content: string;
+    constructor(content: string) {
+        this.content = content
+    }
+
+    toString() {
+        return this.content
     }
 }
 
 export const criteriaBuilder: CriteriaBuilder = {
-    and(left: CriteriaBufferImpl, right: CriteriaBufferImpl): CriteriaBufferImpl {
-        return new CriteriaBufferImpl('AND', left, right)
+    and(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer {
+        return new CriteriaConnector('AND', left, right)
     },
-    or(left: CriteriaBufferImpl, right: CriteriaBufferImpl): CriteriaBufferImpl {
-        return new CriteriaBufferImpl('OR', left, right)
+    or(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer {
+        return new CriteriaConnector('OR', left, right)
     }
 };
 

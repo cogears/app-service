@@ -70,7 +70,7 @@ export interface RepeatSql<T> {
 }
 
 export interface Specification<T> {
-    (criteriaBuilder: CriteriaBuilder, subject: EntitySubject<T>): string;
+    (criteriaBuilder: CriteriaBuilder, subject: EntitySubject<T>): CriteriaBuffer;
 }
 
 export interface CriteriaBuilder {

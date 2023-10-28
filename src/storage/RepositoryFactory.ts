@@ -1,6 +1,6 @@
 import { EntitySubject, PageRequest, Specification, RepeatSql } from "types";
 import { DataSchemaInfo, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
-import { criteriaBuilder, predicates, CriteriaBufferImpl } from "./Helper";
+import { criteriaBuilder, predicates, CriteriaCondition } from "./Helper";
 import * as Methods from "./Methods";
 
 function flatten(array: Array<any>): Array<any> {
@@ -159,10 +159,11 @@ export default class RepositoryFactory {
         return { where, argumentsLength };
     }
 
-    private executeSpecification<T>(schema: DataSchemaInfo<T>, specification: Specification<any>) {
+    private executeSpecification<T>(schema: DataSchemaInfo<T>, specification: Specification<any>): string {
         let target: ProxyObject = this.createObject(schema);
         try {
-            return specification(criteriaBuilder, target.proxy as EntitySubject<T>);
+            let buffer = specification(criteriaBuilder, target.proxy as EntitySubject<T>);
+            return buffer.toString()
         } finally {
             target.revoke();
         }
@@ -199,7 +200,7 @@ export default class RepositoryFactory {
                     return (...args: Array<any>) => {
                         args = args.map(arg => this.driverRepositoryFactory.encode(arg));
                         //@ts-ignore
-                        return new CriteriaBufferImpl('`' + name + '`' + predicates[operator](...args))
+                        return new CriteriaCondition('`' + name + '`' + predicates[operator](...args))
                     }
                 } else {
                     throw new Error('不支持的方法: ' + operator);
