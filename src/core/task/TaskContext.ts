@@ -1,11 +1,11 @@
-import { Repository, Task, TaskContext as ITaskContext } from "types";
+import { TaskContext as ITaskContext, Repository, Task } from "types";
 import { StorageConnection } from "../../storage";
 import TaskHandle from "./TaskHandle";
 import TaskManager from "./TaskManager";
 
 export default class TaskContext implements ITaskContext {
     private readonly mgr: TaskManager;
-    private storageConnection?: StorageConnection;
+    private storageConnections: Record<string, StorageConnection> = {};
 
     constructor(mgr: TaskManager) {
         this.mgr = mgr;
@@ -15,34 +15,34 @@ export default class TaskContext implements ITaskContext {
         return this.mgr.getRepository(this, name, storage);
     }
 
-    async getStorageConnection(storage?: string): Promise<StorageConnection> {
-        if (!this.storageConnection) {
-            this.storageConnection = await this.mgr.getStorageConnection(storage);
+    async getStorageConnection(storage: string): Promise<StorageConnection> {
+        if (!this.storageConnections[storage]) {
+            this.storageConnections[storage] = await this.mgr.getStorageConnection(storage);
         }
-        return this.storageConnection;
+        return this.storageConnections[storage];
     }
 
     async beginTransaction() {
-        if (this.storageConnection) {
-            await this.storageConnection.beginTransaction();
+        for (let name in this.storageConnections) {
+            await this.storageConnections[name].beginTransaction();
         }
     }
 
     async commit() {
-        if (this.storageConnection) {
-            await this.storageConnection.commit();
+        for (let name in this.storageConnections) {
+            await this.storageConnections[name].commit();
         }
     }
 
     async fallback() {
-        if (this.storageConnection) {
-            await this.storageConnection.rollback();
+        for (let name in this.storageConnections) {
+            await this.storageConnections[name].rollback();
         }
     }
 
     dispose() {
-        if (this.storageConnection) {
-            this.storageConnection.dispose();
+        for (let name in this.storageConnections) {
+            this.storageConnections[name].dispose();
         }
     }
 

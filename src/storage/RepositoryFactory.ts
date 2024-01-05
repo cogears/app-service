@@ -16,8 +16,10 @@ interface ProxyObject {
 
 export default class RepositoryFactory {
     private readonly driverRepositoryFactory: StorageRepositoryFactory;
+    private readonly storage: string
 
-    constructor(driverRepositoryFactory: StorageRepositoryFactory) {
+    constructor(storage: string, driverRepositoryFactory: StorageRepositoryFactory) {
+        this.storage = storage
         this.driverRepositoryFactory = driverRepositoryFactory;
     }
 
@@ -34,22 +36,22 @@ export default class RepositoryFactory {
         };
 
         schema.repositoryClass.prototype.insert = async function (entity: T): Promise<T> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             return await storage.insert(connection, entity);
         };
 
         schema.repositoryClass.prototype.update = async function (entity: T): Promise<T> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             return await storage.update(connection, entity)
         };
 
         schema.repositoryClass.prototype.save = async function (entity: T): Promise<T> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             return await storage.save(connection, entity)
         };
 
         schema.repositoryClass.prototype.delete = async function (key: any): Promise<void> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             let primaryKey = schema.fields[0].name;
             let where = primaryKey + '=?';
             let values = [key];
@@ -57,12 +59,12 @@ export default class RepositoryFactory {
         };
 
         schema.repositoryClass.prototype.clear = async function (): Promise<void> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             return await storage.delete(connection);
         };
 
         schema.repositoryClass.prototype.get = async function (key: any): Promise<T | undefined> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             let primaryKey = schema.fields[0].name;
             let where = primaryKey + '=?';
             let values = [key];
@@ -71,13 +73,13 @@ export default class RepositoryFactory {
         };
 
         schema.repositoryClass.prototype.count = async function (specification: Specification<T>): Promise<number> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             let where = specification ? self.executeSpecification(schema, specification) : '';
             return await storage.count(connection, where, []);
         };
 
         schema.repositoryClass.prototype.select = async function (specification: Specification<T>, pageRequest: PageRequest): Promise<any> {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             let where = specification ? self.executeSpecification(schema, specification) : '';
             return await storage.select(connection, where, pageRequest, []);
         };
@@ -87,17 +89,18 @@ export default class RepositoryFactory {
         }
 
         schema.repositoryClass.prototype.submitRepeat = async function (repeat: RepeatSql<T>) {
-            let connection = await this.context.getStorageConnection();
+            let connection = await this.context.getStorageConnection(self.storage);
             return await storage.submitRepeat(connection, repeat)
         }
     }
 
     private buildMethods<T>(storage: StorageRepository<T>, schema: DataSchemaInfo<T>): void {
+        const self = this;
         for (let i = 0; i < schema.methods.length; i++) {
             let method = schema.methods[i];
             if (method.sql) {
                 schema.repositoryClass.prototype[method.name] = async function (...values: Array<any>) {
-                    let connection = await this.context.getStorageConnection();
+                    let connection = await this.context.getStorageConnection(self.storage);
                     let list = await connection.query(method.sql, values);
                     if (method.sql.toLowerCase().startsWith('select')) {
                         return storage.transform(list)
@@ -110,7 +113,7 @@ export default class RepositoryFactory {
                 if (key) {
                     let { where, argumentsLength } = this.parseQuery(schema, method.name.substring(key.length));
                     //@ts-ignore
-                    schema.repositoryClass.prototype[method.name] = Methods[key](storage, where, argumentsLength);
+                    schema.repositoryClass.prototype[method.name] = Methods[key](self.storage, storage, where, argumentsLength);
                 }
             }
         }

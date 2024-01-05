@@ -4,13 +4,15 @@ import MysqlDriver from "./mysql/MysqlDriver";
 import RepositoryFactory from "./RepositoryFactory";
 
 export default class Storage {
+    readonly name: string;
     private driver: StorageDriver;
     private repositoryFactory: RepositoryFactory;
     private schemas: Record<string, DataSchemaInfo<any>> = {};
 
     constructor(config: MysqlConfig) {
+        this.name = config.name
         this.driver = new MysqlDriver(config);
-        this.repositoryFactory = new RepositoryFactory(this.driver.getRepositoryFactory());
+        this.repositoryFactory = new RepositoryFactory(this.name, this.driver.getRepositoryFactory());
     }
 
     async initialize() {

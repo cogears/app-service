@@ -1,9 +1,9 @@
 import { StorageRepository } from ".";
 
-export function getOneBy<T>(repository: StorageRepository<T>, where: string, argumentsLength: number) {
+export function getOneBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<T | undefined> {
         // @ts-ignore
-        let connection = await this.context.getStorageConnection();
+        let connection = await this.context.getStorageConnection(storage);
         if (argumentsLength !== values.length) {
             throw new Error('参数错误');
         }
@@ -12,10 +12,10 @@ export function getOneBy<T>(repository: StorageRepository<T>, where: string, arg
     };
 }
 
-export function getCountBy<T>(repository: StorageRepository<T>, where: string, argumentsLength: number) {
+export function getCountBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<any> {
         // @ts-ignore
-        let connection = await this.context.getStorageConnection();
+        let connection = await this.context.getStorageConnection(storage);
         if (argumentsLength !== values.length) {
             throw new Error('参数错误');
         }
@@ -23,10 +23,10 @@ export function getCountBy<T>(repository: StorageRepository<T>, where: string, a
     };
 }
 
-export function getAllBy<T>(repository: StorageRepository<T>, where: string, argumentsLength: number) {
+export function getAllBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<T[]> {
         // @ts-ignore
-        let connection = await this.context.getStorageConnection();
+        let connection = await this.context.getStorageConnection(storage);
         if (argumentsLength !== values.length && argumentsLength !== values.length - 1) {
             throw new Error('参数错误');
         }
@@ -35,10 +35,10 @@ export function getAllBy<T>(repository: StorageRepository<T>, where: string, arg
     };
 }
 
-export function deleteBy<T>(repository: StorageRepository<T>, where: string, argumentsLength: number) {
+export function deleteBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<any> {
         // @ts-ignore
-        let connection = await this.context.getStorageConnection();
+        let connection = await this.context.getStorageConnection(storage);
         if (argumentsLength !== values.length) {
             throw new Error('参数错误');
         }
