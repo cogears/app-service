@@ -6,33 +6,44 @@ import { LogFactory } from '../common';
 export default class InternalContext {
     static readonly READY: string = 'ready'
     private _taskManager: TaskManager
+    private _storages: Record<string, Storage> = {}
     private _storage?: Storage
-    private _ready: boolean = false
+    private _waitForStorage: number = 0
     constructor() {
         this._taskManager = new TaskManager(this)
-        this._ready = true
     }
 
     get ready() {
-        return this._ready
+        return this._waitForStorage == 0
     }
 
-    get storage(): Storage {
-        if (this._storage) {
-            return this._storage
+    getStorage(name?: string): Storage {
+        if (name) {
+            if (this._storages[name]) {
+                return this._storages[name]
+            }
+        } else {
+            if (this._storage) {
+                return this._storage
+            }
         }
-        throw new Error('尚未配置安装数据库存储模块')
+        throw new Error('尚未配置安装数据库存储模块:' + (name || 'default'))
     }
 
     private onReady() {
-        this._ready = true
-        this._taskManager.notify()
+        if (this.ready) {
+            this._taskManager.notify()
+        }
     }
 
     async installStorage(config: MysqlConfig) {
-        this._ready = false
-        this._storage = new Storage(config)
-        await this._storage.initialize()
+        this._waitForStorage++
+        this._storages[config.name] = new Storage(config)
+        if (!this._storage) {
+            this._storage = this._storages[config.name]
+        }
+        await this._storages[config.name].initialize()
+        this._waitForStorage--
         this.onReady()
     }
 
