@@ -4,6 +4,7 @@
 import { Class } from "./lang";
 
 export type MysqlConfig = {
+    name: string;
     host: string;
     port?: number;
     user: string;

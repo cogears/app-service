@@ -11,13 +11,13 @@ export default class TaskContext implements ITaskContext {
         this.mgr = mgr;
     }
 
-    getRepository(name: string): Repository<any> {
-        return this.mgr.getRepository(this, name);
+    getRepository(name: string, storage?: string): Repository<any> {
+        return this.mgr.getRepository(this, name, storage);
     }
 
-    async getStorageConnection(): Promise<StorageConnection> {
+    async getStorageConnection(storage?: string): Promise<StorageConnection> {
         if (!this.storageConnection) {
-            this.storageConnection = await this.mgr.getStorageConnection();
+            this.storageConnection = await this.mgr.getStorageConnection(storage);
         }
         return this.storageConnection;
     }

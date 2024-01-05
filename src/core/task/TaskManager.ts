@@ -46,12 +46,12 @@ export default class TaskManager {
         }
     }
 
-    getStorageConnection(): Promise<StorageConnection> {
-        return this.context.storage.getConnection()
+    getStorageConnection(storage?: string): Promise<StorageConnection> {
+        return this.context.getStorage(storage).getConnection()
     }
 
-    getRepository(context: TaskContext, name: string): Repository<any> {
-        let schema = this.context.storage.getSchema(name)
+    getRepository(context: TaskContext, name: string, storage?: string): Repository<any> {
+        let schema = this.context.getStorage(storage).getSchema(name)
         return new schema.repositoryClass(context);
     }
 
