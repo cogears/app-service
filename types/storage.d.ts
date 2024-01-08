@@ -20,11 +20,13 @@ export type DataSchema<T> = {
     writable: boolean,
     entityClass?: Class<T>,
     comment?: string,
+    storage?: string,
 }
 export type DataSchemaOptions = {
     name?: string,
     writable?: boolean,
     comment?: string,
+    storage?: string,
 }
 
 export type DataField = { name: string, alias: string, } & DataFieldOptions;
@@ -110,7 +112,7 @@ export interface EntityFieldPredicate {
     notIn(value: any): CriteriaBuffer;
 }
 
-export interface CriteriaBuffer{
+export interface CriteriaBuffer {
 }
 
 export interface PageRequest {

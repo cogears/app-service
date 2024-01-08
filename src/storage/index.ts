@@ -59,6 +59,7 @@ interface EntityInfo {
     writable: boolean;
     fields: DataField[];
     comment?: string;
+    storage?: string;
 }
 
 interface RepositoryInfo {
@@ -153,6 +154,7 @@ export function getSchemas(): DataSchemaInfo<any>[] {
                 name: entity.name,
                 writable: entity.writable,
                 comment: entity.comment,
+                storage: entity.storage || '',
                 fields: entity.fields,
                 entityClass: entityClass,
                 repositoryClass: repositoryClass,

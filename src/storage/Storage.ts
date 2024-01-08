@@ -18,6 +18,7 @@ export default class Storage {
     async initialize() {
         let connection = await this.getConnection();
         let schemaInfos: DataSchemaInfo<any>[] = getSchemas();
+        schemaInfos = schemaInfos.filter(item => item.storage == this.name)
         for (let schema of schemaInfos) {
             await this.registerRepository(connection, schema);
         }
