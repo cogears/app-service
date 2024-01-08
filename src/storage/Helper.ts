@@ -43,11 +43,11 @@ export const predicates = {
     between(min: string, max: string): string {
         return ` BETWEEN ${min === undefined ? '?' : min} AND ${max === undefined ? '?' : max}`;
     },
-    lessThan(value: string): string {
-        return ` < ${value === undefined ? '?' : value}`;
+    lessThan(value: string, equal: boolean = false): string {
+        return ` ${equal ? '<=' : '<'} ${value === undefined ? '?' : value}`;
     },
-    greaterThan(value: string): string {
-        return ` > ${value === undefined ? '?' : value}`;
+    greaterThan(value: string, equal: boolean = false): string {
+        return ` ${equal ? '>=' : '>'} ${value === undefined ? '?' : value}`;
     },
     isNull(): string {
         return ' IS NULL';
