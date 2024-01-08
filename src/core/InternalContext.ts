@@ -60,8 +60,8 @@ export default class InternalContext {
     }
 
     dispose() {
-        if (this._storage) {
-            this._storage.dispose();
+        for (let k in this._storages) {
+            this._storages[k].dispose()
         }
         this._taskManager.dispose();
     }
