@@ -91,9 +91,9 @@ export interface EntityFieldPredicate {
 
     between(min: any, max: any): CriteriaBuffer;
 
-    lessThan(value: any): CriteriaBuffer;
+    lessThan(value: string, equal?: boolean): CriteriaBuffer;
 
-    greaterThan(value: any): CriteriaBuffer;
+    greaterThan(value: string, equal?: boolean): CriteriaBuffer;
 
     isNull(): CriteriaBuffer;
 
