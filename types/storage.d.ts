@@ -39,6 +39,7 @@ export type DataFieldOptions = {
     m?: number,
     d?: number,
     comment?: string,
+    canBeNull?: boolean,    // 是否可为空
 }
 
 export type DataFieldType = "int" | "bigint" | "string" | "boolean" | "text" | "timestamp" | "date" | "datetime" | "decimal" | "double";

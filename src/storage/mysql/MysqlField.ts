@@ -4,7 +4,7 @@ export function int(field: DataField, isPrimaryKey: boolean = false): string {
     if (isPrimaryKey && field.auto) {
         return `\`${field.name}\` INT(11) NOT NULL AUTO_INCREMENT`;
     } else {
-        return `\`${field.name}\` INT(11) NOT NULL DEFAULT 0`;
+        return `\`${field.name}\` INT(11) ${field.canBeNull ? '' : 'NOT NULL'} DEFAULT 0`;
     }
 }
 
@@ -12,7 +12,7 @@ export function bigint(field: DataField, isPrimaryKey: boolean = false): string 
     if (isPrimaryKey && field.auto) {
         return `\`${field.name}\` BIGINT(20) NOT NULL AUTO_INCREMENT`;
     } else {
-        return `\`${field.name}\` BIGINT(20) NOT NULL DEFAULT 0`;
+        return `\`${field.name}\` BIGINT(20) ${field.canBeNull ? '' : 'NOT NULL'} DEFAULT 0`;
     }
 }
 
@@ -67,11 +67,11 @@ export function datetime(field: DataField): string {
 export function decimal(field: DataField): string {
     let m = field.m || 10;
     let d = field.d || 0;
-    return `\`${field.name}\` DECIMAL(${m}, ${d}) NOT NULL DEFAULT 0`;
+    return `\`${field.name}\` DECIMAL(${m}, ${d}) ${field.canBeNull ? '' : 'NOT NULL'} DEFAULT 0`;
 }
 
 export function double(field: DataField): string {
     let m = field.m || 10;
     let d = field.d || 0;
-    return `\`${field.name}\` DOUBLE(${m}, ${d}) NOT NULL DEFAULT 0`;
+    return `\`${field.name}\` DOUBLE(${m}, ${d}) ${field.canBeNull ? '' : 'NOT NULL'} DEFAULT 0`;
 }
