@@ -37,16 +37,16 @@ export const criteriaBuilder: CriteriaBuilder = {
 };
 
 export const predicates = {
-    equal(value: string): string {
+    equal(value: any): string {
         return ` = ${value === undefined ? '?' : value}`;
     },
-    between(min: string, max: string): string {
+    between(min: any, max: any): string {
         return ` BETWEEN ${min === undefined ? '?' : min} AND ${max === undefined ? '?' : max}`;
     },
-    lessThan(value: string, equal: boolean = false): string {
+    lessThan(value: any, equal: boolean = false): string {
         return ` ${equal ? '<=' : '<'} ${value === undefined ? '?' : value}`;
     },
-    greaterThan(value: string, equal: boolean = false): string {
+    greaterThan(value: any, equal: boolean = false): string {
         return ` ${equal ? '>=' : '>'} ${value === undefined ? '?' : value}`;
     },
     isNull(): string {
@@ -58,19 +58,19 @@ export const predicates = {
     notNull(): string {
         return this.isNotNull();
     },
-    like(value: string): string {
+    like(value: any): string {
         return ` LIKE ${value === undefined ? '?' : value}`;
     },
-    notLike(value: string): string {
+    notLike(value: any): string {
         return ` NOT LIKE ${value === undefined ? '?' : value}`;
     },
-    not(value: string): string {
+    not(value: any): string {
         return ` <> ${value === undefined ? '?' : value}`;
     },
-    in(value: string): string {
+    in(value: any): string {
         return ` IN (${value === undefined ? '?' : value})`;
     },
-    notIn(value: string): string {
+    notIn(value: any): string {
         return ` NOT IN (${value === undefined ? '?' : value})`;
     }
 };
