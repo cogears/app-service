@@ -4,9 +4,6 @@ import { Repository } from "./storage";
 ////  事件接口                                                              ////
 ///////////////////////////////////////////////////////////////////////////////
 export class EventDispatcher {
-    addChild(child: EventDispatcher): void;
-    removeChild(child: EventDispatcher): void;
-    removeAllChildren(): void;
     addEventListener(eventNames: string, listener: EventListener): void;
     removeEventListener(eventNames: string, listener?: EventListener): void;
     removeAllEventListeners(): void;

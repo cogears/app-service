@@ -2,7 +2,6 @@ import { EventDispatcher as IEventDispatcher, EventListener } from "types";
 
 export default class EventDispatcher implements IEventDispatcher {
     private listeners: Record<string, EventListener[]> = {};
-    private children: EventDispatcher[] = [];
 
     dispatch(event: string, ...args: Array<any>) {
         if (this.listeners[event]) {
@@ -15,27 +14,6 @@ export default class EventDispatcher implements IEventDispatcher {
                 }
             }
         }
-        let children = this.children.slice();
-        for (let child of children) {
-            child.dispatch(event, ...args);
-        }
-    }
-
-    addChild(child: EventDispatcher) {
-        if (this.children.indexOf(child) == -1) {
-            this.children.push(child);
-        }
-    }
-
-    removeChild(child: EventDispatcher) {
-        let i = this.children.indexOf(child);
-        if (i >= 0) {
-            this.children.splice(i, 1);
-        }
-    }
-
-    removeAllChildren() {
-        this.children = [];
     }
 
     addEventListener(eventNames: string, listener: EventListener) {
