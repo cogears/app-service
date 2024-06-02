@@ -78,6 +78,8 @@ export interface Specification<T> {
 }
 
 export interface CriteriaBuilder {
+    blank(): CriteriaBuffer;
+
     and(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer;
 
     or(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer;

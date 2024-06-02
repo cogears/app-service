@@ -28,6 +28,10 @@ export class CriteriaCondition implements CriteriaBuffer {
 }
 
 export const criteriaBuilder: CriteriaBuilder = {
+    blank() {
+        return new CriteriaCondition('');
+    },
+
     and(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer {
         return new CriteriaConnector('AND', left, right)
     },
