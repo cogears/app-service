@@ -1,4 +1,4 @@
-import { TaskContext as ITaskContext, Repository, Task } from "types";
+import { Class, TaskContext as ITaskContext, Repository, Task } from "types";
 import { StorageConnection } from "../../storage";
 import TaskHandle from "./TaskHandle";
 import TaskManager from "./TaskManager";
@@ -11,7 +11,8 @@ export default class TaskContext implements ITaskContext {
         this.mgr = mgr;
     }
 
-    getRepository<T>(name: string, storage?: string): Repository<T> {
+    getRepository<T>(target: string | Class<T>, storage?: string): Repository<T> {
+        const name = typeof target == 'string' ? target : target.name;
         return this.mgr.getRepository(this, name, storage);
     }
 
