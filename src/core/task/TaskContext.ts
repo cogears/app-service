@@ -11,7 +11,7 @@ export default class TaskContext implements ITaskContext {
         this.mgr = mgr;
     }
 
-    getRepository(name: string, storage?: string): Repository<any> {
+    getRepository<T>(name: string, storage?: string): Repository<T> {
         return this.mgr.getRepository(this, name, storage);
     }
 

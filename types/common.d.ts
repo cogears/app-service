@@ -20,7 +20,7 @@ export function LogFactory(logPath?: string): void
 ////  任务接口                                                              ////
 ///////////////////////////////////////////////////////////////////////////////
 export interface TaskContext {
-    getRepository(name: string, storage?: string): Repository<any>;
+    getRepository<T>(name: string, storage?: string): Repository<T>;
 
     schedule(task: Task, delay?: number): TaskHandle;
 
