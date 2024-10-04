@@ -135,10 +135,10 @@ class MysqlSqlGenerator {
 
     getSelect(schema: DataSchema<any>, where: string, pageRequest?: PageRequest): string {
         let fields = '*';
-        if (pageRequest && pageRequest.fields) {
-            fields = pageRequest.fields
-                .map(alias => schema.fields.find(field => field.alias == alias)?.name)
-                .filter(name => name).join(',')
+        if (pageRequest && pageRequest.fields && pageRequest.fields.length > 0) {
+            const fieldList = pageRequest.fields
+            fields = schema.fields.filter(field => fieldList.indexOf(field.alias) >= 0)
+                .map(field => `\`${field.name}\``).join(',')
         }
         let order = (pageRequest && pageRequest.orders) ? getOrders(schema, pageRequest.orders) : false;
         let sql = `FROM \`${schema.name}\``;
