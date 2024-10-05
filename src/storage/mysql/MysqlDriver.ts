@@ -56,6 +56,7 @@ export default class MysqlDriver implements StorageDriver {
 
     private onConnectionCreated(connection: PoolConnection) {
         connection.query(`set time_zone = '${this.config.timezone}'`);
+        connection.query(`set names utf8mb4`)
     }
 
     private onConnectionRelease(connection: PoolConnection) {
