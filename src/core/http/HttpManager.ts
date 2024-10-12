@@ -46,8 +46,8 @@ export default class HttpManager implements IHttpManager {
             }
         }
         this.server.use(path, router)
+        return this
     }
-
 }
 
 async function executeHttpTask(task: HttpTask, context: TaskContext, _req: express.Request, res: express.Response) {

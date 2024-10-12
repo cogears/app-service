@@ -11,7 +11,7 @@ export interface HttpTask {
 }
 
 export interface HttpManager {
-    addRoutes(path: string, tasks: Class<HttpTask>[]): void
+    addRoutes(path: string, tasks: Class<HttpTask>[]): HttpManager
 }
 
 export type ApiMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
