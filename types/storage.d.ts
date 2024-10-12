@@ -139,7 +139,7 @@ export interface PageResult<T> {
 
 
 ///////////////////////////////////////////////////////////////////////////////
-////  修饰器                                                              ////
+////  修饰器                                                                ////
 ///////////////////////////////////////////////////////////////////////////////
 export function entity(options?: DataSchemaOptions): Function
 export function id(options: DataFieldOptions): Function;

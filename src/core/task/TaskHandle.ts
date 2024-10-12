@@ -1,9 +1,9 @@
-import { EventDispatcher } from "../../common";
 import { TaskHandle as ITaskHandle, Task } from "types";
+import { EventDispatcher } from "../../common";
 
 export default class TaskHandle extends EventDispatcher implements ITaskHandle {
     static readonly COMPLETE: string = 'complete'
-    private timer!: NodeJS.Timer;
+    private timer!: any;
     private isPeriod!: boolean;
     private valid: boolean = true
     readonly task: Task;

@@ -1,11 +1,13 @@
-import { MysqlConfig, Task } from 'types';
-import Storage from "../storage/Storage";
-import TaskManager from './task/TaskManager';
+import { HttpConfig, MysqlConfig, Task } from 'types';
 import { LogFactory } from '../common';
+import Storage from "../storage/Storage";
+import HttpManager from './http/HttpManager';
+import TaskManager from './task/TaskManager';
 
 export default class InternalContext {
     static readonly READY: string = 'ready'
     private _taskManager: TaskManager
+    private _httpManager?: HttpManager
     private _storages: Record<string, Storage> = {}
     private _storage?: Storage
     private _waitForStorage: number = 0
@@ -36,6 +38,10 @@ export default class InternalContext {
         }
     }
 
+    installHttp(config: HttpConfig) {
+        this._httpManager = new HttpManager(this, config)
+        return this._httpManager
+    }
     async installStorage(config: MysqlConfig) {
         this._waitForStorage++
         this._storages[config.name] = new Storage(config)
