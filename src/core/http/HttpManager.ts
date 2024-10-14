@@ -50,9 +50,9 @@ export default class HttpManager implements IHttpManager {
     }
 }
 
-async function executeHttpTask(task: HttpTask, context: TaskContext, _req: express.Request, res: express.Response) {
+async function executeHttpTask(task: HttpTask, context: TaskContext, req: express.Request, res: express.Response) {
     try {
-        let result = await task.execute(context)
+        let result = await task.execute(context, req, res)
         res.send({ code: 0, data: result })
     } catch (e: any) {
         if (e instanceof HttpError) {

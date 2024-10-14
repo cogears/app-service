@@ -1,3 +1,4 @@
+import { Request, Response } from 'express'
 import { TaskContext } from './common'
 import { Class } from './lang'
 
@@ -7,7 +8,7 @@ export interface HttpConfig {
 }
 
 export interface HttpTask {
-    execute(context: TaskContext): Promise<any>
+    execute(context: TaskContext, req: Request, res: Response): Promise<any>
 }
 
 export interface HttpManager {
@@ -22,7 +23,7 @@ export interface ApiOptions {
 }
 
 export interface QueryOptions {
-    type: 'string' | 'number',
+    type?: 'string' | 'number',
     name: string,
     required?: boolean,
 }

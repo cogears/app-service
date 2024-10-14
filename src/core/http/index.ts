@@ -39,15 +39,15 @@ function registerApi(entityClass: Class<any>, options: ApiOptions) {
 
 function registerParam(entityClass: Class<any>, alias: string, options: QueryOptions) {
     let info = getInfo(entityClass)
-    info.params.push(Object.assign({ alias, name: alias }, options))
+    info.params.push(Object.assign({ alias, name: alias, type: 'string' }, options))
 }
 function registerHeader(entityClass: Class<any>, alias: string, options: QueryOptions) {
     let info = getInfo(entityClass)
-    info.headers.push(Object.assign({ alias, name: alias }, options))
+    info.headers.push(Object.assign({ alias, name: alias, type: 'string' }, options))
 }
 function registerQuery(entityClass: Class<any>, alias: string, options: QueryOptions) {
     let info = getInfo(entityClass)
-    info.querys.push(Object.assign({ alias, name: alias }, options))
+    info.querys.push(Object.assign({ alias, name: alias, type: 'string' }, options))
 }
 
 function registerBody(entityClass: Class<any>, alias: string) {
