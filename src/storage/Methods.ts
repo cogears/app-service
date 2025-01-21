@@ -7,7 +7,8 @@ export function getOneBy<T>(storage: string, repository: StorageRepository<T>, w
         if (argumentsLength !== values.length) {
             throw new Error('参数错误');
         }
-        let list = await repository.select(connection, where, undefined, values);
+        let pageRequest = argumentsLength < values.length ? values.pop() : { page: 0, size: 1 };
+        let list = await repository.select(connection, where, pageRequest, values);
         return list.length > 0 ? list[0] : undefined;
     };
 }
