@@ -55,6 +55,7 @@ async function executeHttpTask(task: HttpTask, context: TaskContext, req: expres
         let result = await task.execute(context, req, res)
         res.send({ code: 0, data: result })
     } catch (e: any) {
+        console.error(e)
         if (e instanceof HttpError) {
             res.send({ code: e.code, data: e.message })
         } else {
@@ -87,7 +88,7 @@ function fetchValue(obj: any, options: ApiField) {
         value = parseFloat(value)
     }
     if (options.required) {
-        if (value == undefined || value == null || isNaN(value)) {
+        if (value == undefined || value == null || (options.type == 'number' && isNaN(value))) {
             throw new HttpError(400, `参数${options.name}为空`)
         }
     }

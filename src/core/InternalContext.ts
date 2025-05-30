@@ -19,6 +19,10 @@ export default class InternalContext {
         return this._waitForStorage == 0
     }
 
+    get httpManager() {
+        return this._httpManager
+    }
+
     getStorage(name?: string): Storage {
         if (name) {
             if (this._storages[name]) {

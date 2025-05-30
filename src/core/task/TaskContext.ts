@@ -16,10 +16,12 @@ export default class TaskContext implements ITaskContext {
         return new StorageApi(this.mgr.getStorage(name), this)
     }
 
+    getStorageRepository<T>(target: string | Class<T>, storage?: string): Repository<T> {
+        return this.getStorage(storage).getRepository(target)
+    }
+
     getRepository<T>(target: string | Class<T>, storage?: string): Repository<T> {
-        const name = typeof target == 'string' ? target : target.name;
-        const schema = this.mgr.getStorage(storage).getSchema(name)
-        return new schema.repositoryClass(this);
+        return this.getStorageRepository(target, storage)
     }
 
     async getStorageConnection(storage: string): Promise<StorageConnection> {
@@ -74,5 +76,11 @@ class StorageApi implements IStorage {
     async createRepository<T>(schema: DataSchema<T>) {
         const connection = await this.context.getStorageConnection(this.storage.name)
         await this.storage.registerRepository(connection, schema as DataSchemaInfo<T>)
+    }
+
+    getRepository<T>(target: string | Class<T>): Repository<T> {
+        const name = typeof target == 'string' ? target : target.name;
+        const schema = this.storage.getSchema(name)
+        return new schema.repositoryClass(this);
     }
 }

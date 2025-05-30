@@ -49,6 +49,7 @@ export type DataFieldType = "int" | "bigint" | "string" | "boolean" | "text" | "
 ///////////////////////////////////////////////////////////////////////////////
 export interface Storage {
     createRepository<T>(schema: DataSchema<T>): Promise<void>
+    getRepository<T>(target: string | Class<T>): Repository<T>
 }
 
 export class Repository<T> {
