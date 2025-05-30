@@ -74,7 +74,7 @@ export interface DataMethod {
 
 export interface DataSchemaInfo<T> extends DataSchema<T> {
     repositoryClass: Class<IRepository<T>>;
-    methods: DataMethod[];
+    methods?: DataMethod[];
 }
 
 export function entity(options?: DataSchemaOptions) {

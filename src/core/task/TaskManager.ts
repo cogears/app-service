@@ -1,5 +1,4 @@
-import { Repository, Task } from "types";
-import { StorageConnection } from '../../storage';
+import { Task } from "types";
 import InternalContext from '../InternalContext';
 import TaskContext from "./TaskContext";
 import TaskHandle from "./TaskHandle";
@@ -46,13 +45,8 @@ export default class TaskManager {
         }
     }
 
-    getStorageConnection(storage?: string): Promise<StorageConnection> {
-        return this.context.getStorage(storage).getConnection()
-    }
-
-    getRepository(context: TaskContext, name: string, storage?: string): Repository<any> {
-        let schema = this.context.getStorage(storage).getSchema(name)
-        return new schema.repositoryClass(context);
+    getStorage(name?: string) {
+        return this.context.getStorage(name)
     }
 
     schedule(task: Task, delay: number = 0): TaskHandle {
@@ -84,3 +78,4 @@ export default class TaskManager {
         this.taskList.splice(0, this.taskList.length);
     }
 }
+

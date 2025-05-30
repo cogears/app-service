@@ -1,5 +1,5 @@
-import { Repository } from "./storage";
 import { Class } from "./lang";
+import { Repository, Storage } from "./storage";
 
 ///////////////////////////////////////////////////////////////////////////////
 ////  事件接口                                                              ////
@@ -22,6 +22,8 @@ export function LogFactory(logPath?: string): void
 ///////////////////////////////////////////////////////////////////////////////
 export interface TaskContext {
     getRepository<T>(name: string | Class<T>, storage?: string): Repository<T>;
+
+    getStorage(name?: string): Storage;
 
     schedule(task: Task, delay?: number): TaskHandle;
 

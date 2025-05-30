@@ -47,6 +47,10 @@ export type DataFieldType = "int" | "bigint" | "string" | "boolean" | "text" | "
 ///////////////////////////////////////////////////////////////////////////////
 ////  应用接口                                                              ////
 ///////////////////////////////////////////////////////////////////////////////
+export interface Storage {
+    createRepository<T>(schema: DataSchema<T>): Promise<void>
+}
+
 export class Repository<T> {
     insert(entity: T): Promise<T>;
 

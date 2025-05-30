@@ -1,5 +1,5 @@
-import { DataSchema, MysqlConfig } from "types";
-import { DataSchemaInfo, getSchemas, StorageConnection, StorageDriver, StorageRepository } from ".";
+import { MysqlConfig } from "types";
+import { DataSchemaInfo, getSchemas, StorageConnection, StorageDriver } from ".";
 import MysqlDriver from "./mysql/MysqlDriver";
 import RepositoryFactory from "./RepositoryFactory";
 
@@ -25,11 +25,7 @@ export default class Storage {
         connection.dispose();
     }
 
-    async createRepository<T>(connection: StorageConnection, schema: DataSchema<T>): Promise<StorageRepository<T>> {
-        return await this.repositoryFactory.createRepository(connection, schema)
-    }
-
-    private async registerRepository<T>(connection: StorageConnection, schema: DataSchemaInfo<T>): Promise<void> {
+    async registerRepository<T>(connection: StorageConnection, schema: DataSchemaInfo<T>): Promise<void> {
         if (schema.fields.length > 0) {
             await this.repositoryFactory.register(connection, schema);
             this.schemas[schema.name] = schema;

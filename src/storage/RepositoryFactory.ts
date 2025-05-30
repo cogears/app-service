@@ -1,5 +1,5 @@
-import { DataSchema, EntitySubject, PageRequest, RepeatSql, Specification } from "types";
-import { DataSchemaInfo, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
+import { EntitySubject, Repository as IRepository, PageRequest, RepeatSql, Specification } from "types";
+import { DataSchemaInfo, Repository, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
 import { criteriaBuilder, CriteriaCondition, predicates } from "./Helper";
 import * as Methods from "./Methods";
 
@@ -23,12 +23,11 @@ export default class RepositoryFactory {
         this.driverRepositoryFactory = driverRepositoryFactory;
     }
 
-    async createRepository<T>(connection: StorageConnection, schema: DataSchema<T>): Promise<StorageRepository<T>> {
-        return await this.driverRepositoryFactory.createRepository(connection, schema)
-    }
-
     async register<T>(connection: StorageConnection, schema: DataSchemaInfo<T>): Promise<void> {
-        let storage: StorageRepository<T> = await this.createRepository(connection, schema)
+        let storage: StorageRepository<T> = await this.driverRepositoryFactory.createRepository(connection, schema)
+        if (!schema.repositoryClass) {
+            schema.repositoryClass = createDynamicRepository()
+        }
         this.buildBase(storage, schema);
         this.buildMethods(storage, schema);
     }
@@ -99,25 +98,27 @@ export default class RepositoryFactory {
     }
 
     private buildMethods<T>(storage: StorageRepository<T>, schema: DataSchemaInfo<T>): void {
-        const self = this;
-        for (let i = 0; i < schema.methods.length; i++) {
-            let method = schema.methods[i];
-            if (method.sql) {
-                schema.repositoryClass.prototype[method.name] = async function (...values: Array<any>) {
-                    let connection = await this.context.getStorageConnection(self.storage);
-                    let list = await connection.query(method.sql, values);
-                    if (method.sql.toLowerCase().startsWith('select')) {
-                        return storage.transform(list)
-                    } else {
-                        return list
+        if (schema.methods && schema.methods.length > 0) {
+            const self = this;
+            for (let i = 0; i < schema.methods.length; i++) {
+                let method = schema.methods[i];
+                if (method.sql) {
+                    schema.repositoryClass.prototype[method.name] = async function (...values: Array<any>) {
+                        let connection = await this.context.getStorageConnection(self.storage);
+                        let list = await connection.query(method.sql, values);
+                        if (method.sql.toLowerCase().startsWith('select')) {
+                            return storage.transform(list)
+                        } else {
+                            return list
+                        }
                     }
-                }
-            } else {
-                let key = Object.keys(Methods).find(key => method.name.startsWith(key));
-                if (key) {
-                    let { where, argumentsLength } = this.parseQuery(schema, method.name.substring(key.length));
-                    //@ts-ignore
-                    schema.repositoryClass.prototype[method.name] = Methods[key](self.storage, storage, where, argumentsLength);
+                } else {
+                    let key = Object.keys(Methods).find(key => method.name.startsWith(key));
+                    if (key) {
+                        let { where, argumentsLength } = this.parseQuery(schema, method.name.substring(key.length));
+                        //@ts-ignore
+                        schema.repositoryClass.prototype[method.name] = Methods[key](self.storage, storage, where, argumentsLength);
+                    }
                 }
             }
         }
@@ -219,5 +220,41 @@ export default class RepositoryFactory {
                 }
             }
         })
+    }
+}
+
+
+function createDynamicRepository<T>() {
+    return class DynamicRepository extends Repository<T> implements IRepository<T> {
+        insert(entity: T): Promise<T> {
+            throw new Error("Method not implemented.");
+        }
+        update(entity: T): Promise<T> {
+            throw new Error("Method not implemented.");
+        }
+        save(entity: T): Promise<T> {
+            throw new Error("Method not implemented.");
+        }
+        delete(key: any): Promise<void> {
+            throw new Error("Method not implemented.");
+        }
+        clear(): Promise<void> {
+            throw new Error("Method not implemented.");
+        }
+        get(key: any): Promise<T | undefined> {
+            throw new Error("Method not implemented.");
+        }
+        select(specification?: Specification<T> | undefined, pageRequest?: PageRequest): Promise<T[]> {
+            throw new Error("Method not implemented.");
+        }
+        count(specification?: Specification<T> | undefined): Promise<number> {
+            throw new Error("Method not implemented.");
+        }
+        generateRepeat(): RepeatSql<T> {
+            throw new Error("Method not implemented.");
+        }
+        submitRepeat(repeat: RepeatSql<T>): Promise<void> {
+            throw new Error("Method not implemented.");
+        }
     }
 }
