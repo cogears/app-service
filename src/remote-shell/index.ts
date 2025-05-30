@@ -1,10 +1,12 @@
 import { HttpError } from "src/core/http/HttpError";
 import { HttpTask, TaskContext } from "types";
 import AppContext, { http } from '../index';
+import * as fileTasks from './file';
 import * as storageTasks from './storage';
 
 const commandTasks: Record<string, (context: TaskContext, body: any) => Promise<any>> = {
-    ...storageTasks
+    ...storageTasks,
+    ...fileTasks,
 }
 
 export function startup(context: AppContext, path: string) {
