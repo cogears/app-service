@@ -1,6 +1,6 @@
-import { EntitySubject, PageRequest, Specification, RepeatSql } from "types";
+import { DataSchema, EntitySubject, PageRequest, RepeatSql, Specification } from "types";
 import { DataSchemaInfo, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
-import { criteriaBuilder, predicates, CriteriaCondition } from "./Helper";
+import { criteriaBuilder, CriteriaCondition, predicates } from "./Helper";
 import * as Methods from "./Methods";
 
 function flatten(array: Array<any>): Array<any> {
@@ -23,8 +23,12 @@ export default class RepositoryFactory {
         this.driverRepositoryFactory = driverRepositoryFactory;
     }
 
+    async createRepository<T>(connection: StorageConnection, schema: DataSchema<T>): Promise<StorageRepository<T>> {
+        return await this.driverRepositoryFactory.createRepository(connection, schema)
+    }
+
     async register<T>(connection: StorageConnection, schema: DataSchemaInfo<T>): Promise<void> {
-        let storage: StorageRepository<T> = await this.driverRepositoryFactory.createRepository(connection, schema);
+        let storage: StorageRepository<T> = await this.createRepository(connection, schema)
         this.buildBase(storage, schema);
         this.buildMethods(storage, schema);
     }
