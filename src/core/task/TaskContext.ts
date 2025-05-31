@@ -81,6 +81,6 @@ class StorageApi implements IStorage {
     getRepository<T>(target: string | Class<T>): Repository<T> {
         const name = typeof target == 'string' ? target : target.name;
         const schema = this.storage.getSchema(name)
-        return new schema.repositoryClass(this);
+        return new schema.repositoryClass(this.context);
     }
 }

@@ -3,7 +3,7 @@ import InternalContext from "./core/InternalContext";
 import { startup } from "./remote-shell";
 
 export default class AppContext extends InternalContext implements IAppContext {
-    startupRemoteShell(path: string = '/') {
-        startup(this, path)
+    startupRemoteShell(routePath: string = '/') {
+        startup(this, routePath)
     }
 }

@@ -12,6 +12,6 @@ export default class AppContext {
     installHttp(config: HttpConfig): HttpManager;
     schedule(task: Task, delay?: number): TaskHandle;
     schedulePeriodTask(task: Task, period: number): TaskHandle;
-    startupRemoteShell(path?: string): void;
+    startupRemoteShell(routePath?: string): void;
     dispose(): void;
 }

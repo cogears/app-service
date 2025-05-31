@@ -1,33 +1,41 @@
 import { DataSchema, TaskContext } from "types";
+import { HttpError } from "../core/http/HttpError";
+import { saveStorage } from './index';
 
 export async function create_table(context: TaskContext, data: DataSchema<any>) {
+    data.writable = true
+    saveStorage(data)
     await context.getStorage(data.storage).createRepository(data)
 }
 
-export async function clear_table(context: TaskContext, { storage }: any) {
-    await context.getStorageRepository(storage).clear()
+export async function clear_table(context: TaskContext, { table }: any) {
+    await context.getStorageRepository(table).clear()
 }
 
-export async function insert_data(context: TaskContext, { storage, data }: any) {
-    return await context.getStorageRepository(storage).insert(data)
+export async function insert_data(context: TaskContext, { table, data }: any) {
+    return await context.getStorageRepository(table).insert(data)
 }
 
-export async function update_data(context: TaskContext, { storage, data }: any) {
-    await context.getStorageRepository(storage).update(data)
+export async function update_data(context: TaskContext, { table, data }: any) {
+    await context.getStorageRepository(table).update(data)
 }
 
-export async function save_data(context: TaskContext, { storage, data }: any) {
-    await context.getStorageRepository(storage).save(data)
+export async function save_data(context: TaskContext, { table, data }: any) {
+    await context.getStorageRepository(table).save(data)
 }
 
-export async function delete_data(context: TaskContext, { storage, key }: any) {
-    await context.getStorageRepository(storage).delete(key)
+export async function delete_data(context: TaskContext, { table, key }: any) {
+    await context.getStorageRepository(table).delete(key)
 }
 
-export async function get_data(context: TaskContext, { storage, key }: any) {
-    return await context.getStorageRepository(storage).get(key)
+export async function get_data(context: TaskContext, { table, key }: any) {
+    let data = await context.getStorageRepository(table).get(key)
+    if (data) {
+        return data
+    }
+    throw new HttpError(404, 'not found')
 }
 
-export async function select_data(context: TaskContext, { storage, pageRequest }: any) {
-    return await context.getStorageRepository(storage).select(undefined, pageRequest)
+export async function select_data(context: TaskContext, { table, pageRequest }: any) {
+    return await context.getStorageRepository(table).select(undefined, pageRequest)
 }
