@@ -1,6 +1,7 @@
 export * from './common';
 export * from './http';
 export * from './lang';
+export * from './shell';
 export * from './storage';
 import { Task, TaskHandle } from './common';
 import { HttpConfig, HttpManager } from './http';

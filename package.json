@@ -1,6 +1,6 @@
 {
     "name": "@cogears/app-service",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "description": "application service",
     "main": "dist/index.js",
     "types": "types/index.d.ts",
@@ -12,6 +12,7 @@
         "build": "tsc"
     },
     "dependencies": {
+        "@cogears/http-client": "^1.1.8",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "mysql": "^2.18.1"
