@@ -1,7 +1,7 @@
-import { EntitySubject, Repository as IRepository, PageRequest, RepeatSql, Specification } from "types";
-import { DataSchemaInfo, Repository, StorageConnection, StorageRepository, StorageRepositoryFactory } from ".";
-import { criteriaBuilder, CriteriaCondition, predicates } from "./Helper";
-import * as Methods from "./Methods";
+import { criteriaBuilder, CriteriaCondition, predicates } from "./Helper.js";
+import { DataSchemaInfo, EntitySubject, Repository as IRepository, PageRequest, RepeatSql, Repository, Specification, } from "./index.js";
+import * as Methods from "./Methods.js";
+import { StorageConnection, StorageRepository, StorageRepositoryFactory } from './options.js';
 
 function flatten(array: Array<any>): Array<any> {
     let newArray = [].concat(...array);

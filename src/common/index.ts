@@ -1,4 +1,4 @@
-import EventDispatcher from "./EventDispatcher";
-import LogFactory from "./LogFactory";
+import EventDispatcher from "./EventDispatcher.js";
+import LogFactory from "./LogFactory.js";
 
 export { EventDispatcher, LogFactory };

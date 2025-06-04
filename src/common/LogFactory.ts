@@ -1,5 +1,6 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
+import process from 'process'
 
 function n2(value: number) {
     return value < 10 ? '0' + value : value
@@ -16,7 +17,7 @@ function now() {
 
 export default function (logPath: string = '') {
     if (!logPath) {
-        logPath = path.join(__dirname, '..', 'logs')
+        logPath = path.join(process.cwd(), 'logs')
     }
     fs.mkdirSync(logPath, { recursive: true })
 

@@ -1,7 +1,7 @@
-import { DataSchema } from "types";
-import { StorageConnection, StorageRepositoryFactory } from "..";
-import MysqlRepository from "./MysqlRepository";
-import generator from "./MysqlSqlGenerator";
+import { DataSchema } from "../index.js";
+import { StorageConnection, StorageRepositoryFactory } from '../options.js';
+import MysqlRepository from "./MysqlRepository.js";
+import generator from "./MysqlSqlGenerator.js";
 
 export default class MysqlRepositoryFactory implements StorageRepositoryFactory {
     private async loadTableDescription(connection: StorageConnection, name: string): Promise<string[]> {
@@ -10,7 +10,7 @@ export default class MysqlRepositoryFactory implements StorageRepositoryFactory 
     }
 
     async createRepository<T>(connection: StorageConnection, schema: DataSchema<T>): Promise<MysqlRepository<T>> {
-        if(schema.writable){
+        if (schema.writable) {
             try {
                 let fields = await this.loadTableDescription(connection, schema.name);
                 await connection.query(generator.getAlter(schema, fields));

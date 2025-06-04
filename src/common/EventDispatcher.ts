@@ -1,6 +1,8 @@
-import { EventDispatcher as IEventDispatcher, EventListener } from "types";
+interface EventListener {
+    (event: string, ...args: any[]): any
+}
 
-export default class EventDispatcher implements IEventDispatcher {
+export default class EventDispatcher {
     private listeners: Record<string, EventListener[]> = {};
 
     dispatch(event: string, ...args: Array<any>) {

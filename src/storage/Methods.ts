@@ -1,4 +1,4 @@
-import { StorageRepository } from ".";
+import { StorageRepository } from "./options.js";
 
 export function getOneBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<T | undefined> {

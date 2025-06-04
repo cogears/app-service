@@ -1,9 +1,15 @@
 {
     "name": "@cogears/app-service",
-    "version": "1.4.4",
+    "version": "2.0.0",
     "description": "application service",
-    "main": "dist/index.js",
-    "types": "types/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "node": "./dist/index-node.js",
+            "browser": "./dist/index-browser.js",
+            "types": "./types/index.d.js"
+        }
+    },
     "files": [
         "dist/**",
         "types/**"
@@ -12,7 +18,7 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@cogears/http-client": "^1.1.8",
+        "@cogears/http-client": "^2.0.0",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "mysql": "^2.18.1"

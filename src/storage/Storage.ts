@@ -1,7 +1,7 @@
-import { MysqlConfig } from "types";
-import { DataSchemaInfo, getSchemas, StorageConnection, StorageDriver } from ".";
-import MysqlDriver from "./mysql/MysqlDriver";
-import RepositoryFactory from "./RepositoryFactory";
+import { DataSchemaInfo, getSchemas, MysqlConfig, } from "./index.js";
+import MysqlDriver from "./mysql/MysqlDriver.js";
+import { StorageConnection, StorageDriver } from './options.js';
+import RepositoryFactory from "./RepositoryFactory.js";
 
 export default class Storage {
     readonly name: string;

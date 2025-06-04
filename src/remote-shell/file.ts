@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { TaskContext } from "types";
-import { HttpError } from '../core/http/HttpError';
-import { USER_PATH } from "./config";
+import fs from 'fs';
+import path from 'path';
+import { HttpError } from '../core/http/HttpError.js';
+import TaskContext from '../core/task/TaskContext.js';
+import { USER_PATH } from "./config.js";
 
 const CURR_PATH = path.resolve(USER_PATH, 'files')
 

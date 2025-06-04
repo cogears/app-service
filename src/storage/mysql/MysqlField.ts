@@ -1,4 +1,4 @@
-import { DataField } from "types";
+import { DataField } from "../index.js";
 
 export function int(field: DataField, isPrimaryKey: boolean = false): string {
     if (isPrimaryKey && field.auto) {

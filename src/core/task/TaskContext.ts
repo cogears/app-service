@@ -1,10 +1,14 @@
-import { Class, DataSchema, Storage as IStorage, TaskContext as ITaskContext, Repository, Task } from "types";
-import { DataSchemaInfo, StorageConnection } from "../../storage";
-import Storage from "../../storage/Storage";
-import TaskHandle from "./TaskHandle";
-import TaskManager from "./TaskManager";
+import { DataSchema, DataSchemaInfo, Repository } from "../../storage/index.js";
+import { StorageConnection } from "../../storage/options.js";
+import Storage from "../../storage/Storage.js";
+import TaskHandle from "./TaskHandle.js";
+import TaskManager from "./TaskManager.js";
 
-export default class TaskContext implements ITaskContext {
+export interface Task {
+    (context: TaskContext): void;
+}
+
+export default class TaskContext {
     private readonly mgr: TaskManager;
     private storageConnections: Record<string, StorageConnection> = {};
 
@@ -12,16 +16,12 @@ export default class TaskContext implements ITaskContext {
         this.mgr = mgr;
     }
 
-    getStorage(name?: string): IStorage {
+    getStorage(name?: string) {
         return new StorageApi(this.mgr.getStorage(name), this)
     }
 
     getStorageRepository<T>(target: string | Class<T>, storage?: string): Repository<T> {
         return this.getStorage(storage).getRepository(target)
-    }
-
-    getRepository<T>(target: string | Class<T>, storage?: string): Repository<T> {
-        return this.getStorageRepository(target, storage)
     }
 
     async getStorageConnection(storage: string): Promise<StorageConnection> {
@@ -65,7 +65,7 @@ export default class TaskContext implements ITaskContext {
 }
 
 
-class StorageApi implements IStorage {
+class StorageApi {
     private readonly storage: Storage
     private readonly context: TaskContext
     constructor(storage: Storage, context: TaskContext) {

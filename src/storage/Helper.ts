@@ -1,4 +1,4 @@
-import { CriteriaBuffer, CriteriaBuilder } from "types";
+import { CriteriaBuffer, CriteriaBuilder } from "./index.js";
 
 export class CriteriaConnector implements CriteriaBuffer {
     private readonly connector: string;

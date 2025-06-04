@@ -1,11 +1,11 @@
-import * as cors from 'cors';
-import * as express from 'express';
-import { Class, HttpConfig, HttpTask, HttpManager as IHttpManager, TaskContext } from 'types';
-import InternalContext from "../InternalContext";
-import { HttpError } from './HttpError';
-import { ApiField, ApiInfo, apis } from './index';
+import cors from 'cors';
+import express from 'express';
+import InternalContext from "../InternalContext.js";
+import TaskContext from '../task/TaskContext.js';
+import { HttpError } from './HttpError.js';
+import { ApiField, ApiInfo, apis, HttpConfig, HttpTask } from './index.js';
 
-export default class HttpManager implements IHttpManager {
+export default class HttpManager {
     private readonly context: InternalContext
     private readonly server: express.Express
 

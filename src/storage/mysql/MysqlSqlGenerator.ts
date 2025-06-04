@@ -1,6 +1,6 @@
 import { escape } from "mysql";
-import { DataField, DataSchema, PageOrder, PageRequest } from "types";
-import * as MysqlField from "./MysqlField";
+import { DataField, DataSchema, PageOrder, PageRequest } from "../index.js";
+import * as MysqlField from "./MysqlField.js";
 
 function getFieldDefine(field: DataField, isPrimaryKey: boolean = false) {
     let text = MysqlField[field.type](field, isPrimaryKey)

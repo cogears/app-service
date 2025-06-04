@@ -1,6 +1,6 @@
-import { DataSchema, PageRequest, RepeatSql } from "types";
-import { StorageConnection, StorageRepository } from "..";
-import generator from "./MysqlSqlGenerator";
+import { DataSchema, PageRequest, RepeatSql, } from "../index.js";
+import { StorageConnection, StorageRepository } from '../options.js';
+import generator from "./MysqlSqlGenerator.js";
 
 export default class MysqlRepository<T> implements StorageRepository<T> {
     private readonly schema: DataSchema<T>;
@@ -82,7 +82,7 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
 }
 
 const BUFFER_LIMIT = 1024 * 1024 * 0.995
-class MysqlRepeatSql<T> implements RepeatSql<T>{
+class MysqlRepeatSql<T> implements RepeatSql<T> {
     private readonly schema: DataSchema<T>;
     private readonly replace: string = ''
     private readonly buffer: string[] = []

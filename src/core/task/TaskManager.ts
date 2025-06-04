@@ -1,7 +1,6 @@
-import { Task } from "types";
-import InternalContext from '../InternalContext';
-import TaskContext from "./TaskContext";
-import TaskHandle from "./TaskHandle";
+import InternalContext from '../InternalContext.js';
+import TaskContext, { Task } from "./TaskContext.js";
+import TaskHandle from "./TaskHandle.js";
 
 export default class TaskManager {
     private readonly context: InternalContext;

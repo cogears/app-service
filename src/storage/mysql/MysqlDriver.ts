@@ -1,8 +1,8 @@
 import { createPool, Pool, PoolConfig, PoolConnection } from "mysql";
-import { MysqlConfig } from "types";
-import { StorageDriver } from "..";
-import MysqlConnection from "./MysqlConnection";
-import MysqlRepositoryFactory from "./MysqlRepositoryFactory";
+import { MysqlConfig, } from "../index.js";
+import { StorageDriver } from '../options.js';
+import MysqlConnection from "./MysqlConnection.js";
+import MysqlRepositoryFactory from "./MysqlRepositoryFactory.js";
 
 const TIMEOUT = 10000;
 const DEFAULT = {

@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
-import * as fs from 'fs';
-import * as path from 'path';
-import { DataSchema, HttpTask, TaskContext } from "types";
-import { HttpError } from "../core/http/HttpError";
-import AppContext, { http } from '../index';
-import { USER_PATH } from "./config";
-import * as fileTasks from './file';
-import * as storageTasks from './storage';
+import fs from 'fs';
+import path from 'path';
+import { HttpError } from "../core/http/HttpError.js";
+import { HttpTask } from "../core/http/index.js";
+import TaskContext from "../core/task/TaskContext.js";
+import AppContext, { http } from '../index.js';
+import { DataSchema } from "../storage/index.js";
+import { USER_PATH } from "./config.js";
+import * as fileTasks from './file.js';
+import * as storageTasks from './storage.js';
 
 const commandTasks: Record<string, (context: TaskContext, body: any) => Promise<any>> = {
     ...storageTasks,

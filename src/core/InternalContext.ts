@@ -1,8 +1,10 @@
-import { HttpConfig, MysqlConfig, Task } from 'types';
-import { LogFactory } from '../common';
-import Storage from "../storage/Storage";
-import HttpManager from './http/HttpManager';
-import TaskManager from './task/TaskManager';
+import LogFactory from '../common/LogFactory.js';
+import { MysqlConfig } from '../storage/index.js';
+import Storage from "../storage/Storage.js";
+import HttpManager from './http/HttpManager.js';
+import { HttpConfig } from './http/index.js';
+import { Task } from './task/TaskContext.js';
+import TaskManager from './task/TaskManager.js';
 
 export default class InternalContext {
     static readonly READY: string = 'ready'

@@ -1,5 +1,5 @@
 import { PoolConnection } from "mysql";
-import { StorageConnection } from "..";
+import { StorageConnection } from "../options.js";
 
 export default class MysqlConnection implements StorageConnection {
     private readonly connection: PoolConnection;

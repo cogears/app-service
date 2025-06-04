@@ -1,6 +1,7 @@
-import { DataSchema, TaskContext } from "types";
-import { HttpError } from "../core/http/HttpError";
-import { saveStorage } from './index';
+import { HttpError } from "../core/http/HttpError.js";
+import TaskContext from "../core/task/TaskContext.js";
+import { DataSchema } from "../storage/index.js";
+import { saveStorage } from './index.js';
 
 export async function create_table(context: TaskContext, data: DataSchema<any>) {
     data.writable = true

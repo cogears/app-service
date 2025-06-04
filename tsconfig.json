@@ -1,15 +1,19 @@
 {
     "compilerOptions": {
-        "strict": true,
-        "declaration": false,
-        "module": "commonjs",
+        "module": "NodeNext",
         "target": "ESNext",
+        "moduleResolution": "NodeNext",
+        "strict": true,
+        "declaration": true,
+        "stripInternal": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "experimentalDecorators": true,
         "sourceMap": false,
+        "rootDir": "./src",
         "outDir": "./dist",
+        "declarationDir": "./types",
         "lib": [
             "esnext",
             "dom",
@@ -19,12 +23,6 @@
         "types": [
             "node",
         ],
-        "baseUrl": ".",
-        "paths": {
-            "types": [
-                "types"
-            ]
-        }
     },
     "include": [
         "src/**/*"

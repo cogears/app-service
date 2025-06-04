@@ -1,7 +1,7 @@
-import { TaskHandle as ITaskHandle, Task } from "types";
-import { EventDispatcher } from "../../common";
+import EventDispatcher from "../../common/EventDispatcher.js";
+import { Task } from "./TaskContext.js";
 
-export default class TaskHandle extends EventDispatcher implements ITaskHandle {
+export default class TaskHandle extends EventDispatcher {
     static readonly COMPLETE: string = 'complete'
     private timer!: any;
     private isPeriod!: boolean;

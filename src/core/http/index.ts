@@ -1,4 +1,62 @@
-import { ApiMethod, ApiOptions, Class, HttpTask, QueryOptions } from "types";
+import { Request, Response } from "express"
+import TaskContext from "../task/TaskContext.js"
+
+export interface HttpConfig {
+    port: number,
+    jsonFilter?: (key: any, value: any) => any
+}
+
+export interface HttpTask {
+    execute(context: TaskContext, req: Request, res: Response): Promise<any>
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+////  修饰器                                                                ////
+///////////////////////////////////////////////////////////////////////////////
+export type ApiMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
+
+export interface ApiOptions {
+    method: ApiMethod,
+    url: string,
+}
+
+export interface QueryOptions {
+    type?: 'string' | 'number',
+    name: string,
+    required?: boolean,
+}
+
+
+export const http = {
+    api(options: ApiOptions) {
+        return function (entityClass: Class<any>) {
+            if (options) {
+                registerApi(entityClass, options)
+            }
+        }
+    },
+    param(options: QueryOptions) {
+        return function (prototype: any, propertyName: string) {
+            registerParam(prototype.constructor, propertyName, options);
+        }
+    },
+    header(options: QueryOptions) {
+        return function (prototype: any, propertyName: string) {
+            registerHeader(prototype.constructor, propertyName, options);
+        }
+    },
+    query(options: QueryOptions) {
+        return function (prototype: any, propertyName: string) {
+            registerQuery(prototype.constructor, propertyName, options);
+        }
+    },
+    body() {
+        return function (prototype: any, propertyName: string) {
+            registerBody(prototype.constructor, propertyName);
+        }
+    },
+}
 
 export interface ApiInfo<T extends HttpTask> {
     clazz: Class<T>,
@@ -35,8 +93,6 @@ function registerApi(entityClass: Class<any>, options: ApiOptions) {
     let info = getInfo(entityClass)
     Object.assign(info, options)
 }
-
-
 function registerParam(entityClass: Class<any>, alias: string, options: QueryOptions) {
     let info = getInfo(entityClass)
     info.params.push(Object.assign({ alias, name: alias, type: 'string' }, options))
@@ -49,44 +105,7 @@ function registerQuery(entityClass: Class<any>, alias: string, options: QueryOpt
     let info = getInfo(entityClass)
     info.querys.push(Object.assign({ alias, name: alias, type: 'string' }, options))
 }
-
 function registerBody(entityClass: Class<any>, alias: string) {
     let info = getInfo(entityClass)
     info.body = { alias }
-}
-
-export function api(options: ApiOptions) {
-    return function (entityClass: Class<any>) {
-        if (options) {
-            registerApi(entityClass, options)
-        }
-    }
-}
-
-function param(options: QueryOptions) {
-    return function (prototype: any, propertyName: string) {
-        registerParam(prototype.constructor, propertyName, options);
-    }
-}
-
-function header(options: QueryOptions) {
-    return function (prototype: any, propertyName: string) {
-        registerHeader(prototype.constructor, propertyName, options);
-    }
-}
-
-function query(options: QueryOptions) {
-    return function (prototype: any, propertyName: string) {
-        registerQuery(prototype.constructor, propertyName, options);
-    }
-}
-
-function body() {
-    return function (prototype: any, propertyName: string) {
-        registerBody(prototype.constructor, propertyName);
-    }
-}
-
-export const http = {
-    api, param, query, header, body
 }
