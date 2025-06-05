@@ -1,18 +1,19 @@
 import InternalContext from '../InternalContext.js';
-import TaskContext, { Task } from "./TaskContext.js";
+import { Task } from './index.js';
+import TaskContext from "./TaskContext.js";
 import TaskHandle from "./TaskHandle.js";
-
+/** @internal */
 export default class TaskManager {
     private readonly context: InternalContext;
-    private readonly taskList: TaskHandle[] = [];
+    private readonly taskList: TaskWorker[] = [];
     private running: boolean = true;
 
     constructor(context: InternalContext) {
         this.context = context;
     }
 
-    private activate(task: TaskHandle) {
-        if (this.running) {
+    private activate(task: TaskWorker) {
+        if (this.running && this.context.ready) {
             this.taskList.push(task);
             this.notify();
         }
@@ -21,25 +22,27 @@ export default class TaskManager {
     notify() {
         if (this.context.ready) {
             if (this.taskList.length > 0) {
-                let task = this.taskList.shift();
-                task && this.execute(task);
+                const task = this.taskList.shift();
+                task && this.executeTask(task);
             }
         }
     }
 
-    private async execute(taskHandle: TaskHandle) {
-        if (taskHandle.isValid()) {
-            let context = new TaskContext(this);
+    private async executeTask(worker: TaskWorker) {
+        if (worker.handle.isValid()) {
+            const context = new TaskContext(this);
             try {
                 await context.beginTransaction();
-                await taskHandle.task(context);
+                await worker.task(context);
                 await context.commit();
+                worker.handle.dispatch(TaskHandle.SUCCESS)
             } catch (e: any) {
                 console.error(e.stack);
                 await context.fallback();
+                worker.handle.dispatch(TaskHandle.FAIL)
             } finally {
                 await context.dispose();
-                taskHandle.dispatch(TaskHandle.COMPLETE)
+                worker.handle.dispatch(TaskHandle.COMPLETE)
             }
         }
     }
@@ -52,24 +55,20 @@ export default class TaskManager {
         if (!this.running) {
             throw new Error('任务管理器已停止运行')
         }
-        let taskHandle = new TaskHandle(task)
-        let instance = setTimeout(this.activate.bind(this, taskHandle), delay);
-        taskHandle.setTimer(instance, false)
-        return taskHandle
+        const handle = new TaskHandle(setTimeout(() => {
+            this.activate(new TaskWorker(task, handle))
+        }, delay))
+        return handle
     }
 
     schedulePeriodTask(task: Task, period: number): TaskHandle {
         if (!this.running) {
             throw new Error('任务管理器已停止运行')
         }
-        let taskHandle = new TaskHandle(task)
-        let instance = setInterval(() => {
-            if (this.context.ready) {
-                this.activate(taskHandle)
-            }
-        }, period);
-        taskHandle.setTimer(instance, true)
-        return taskHandle
+        const handle = new TaskHandle(setInterval(() => {
+            this.activate(new TaskWorker(task, handle))
+        }, period))
+        return handle
     }
 
     dispose() {
@@ -78,3 +77,11 @@ export default class TaskManager {
     }
 }
 
+class TaskWorker {
+    readonly task: Task
+    readonly handle: TaskHandle
+    constructor(task: Task, handle: TaskHandle) {
+        this.task = task
+        this.handle = handle
+    }
+}

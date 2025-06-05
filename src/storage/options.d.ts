@@ -1,4 +1,5 @@
-import { DataSchema, PageRequest, RepeatSql } from './index.js';
+import { DataSchema } from './decorate.js';
+import { PageRequest, RepeatSql } from './index.js';
 
 export interface StorageDriver {
     getConnection(): Promise<StorageConnection>;

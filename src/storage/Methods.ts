@@ -1,5 +1,5 @@
 import { StorageRepository } from "./options.js";
-
+/** @internal */
 export function getOneBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<T | undefined> {
         // @ts-ignore
@@ -12,7 +12,7 @@ export function getOneBy<T>(storage: string, repository: StorageRepository<T>, w
         return list.length > 0 ? list[0] : undefined;
     };
 }
-
+/** @internal */
 export function getCountBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<any> {
         // @ts-ignore
@@ -23,7 +23,7 @@ export function getCountBy<T>(storage: string, repository: StorageRepository<T>,
         return await repository.count(connection, where, values);
     };
 }
-
+/** @internal */
 export function getAllBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<T[]> {
         // @ts-ignore
@@ -35,7 +35,7 @@ export function getAllBy<T>(storage: string, repository: StorageRepository<T>, w
         return await repository.select(connection, where, pageRequest, values);
     };
 }
-
+/** @internal */
 export function deleteBy<T>(storage: string, repository: StorageRepository<T>, where: string, argumentsLength: number) {
     return async function (...values: Array<any>): Promise<any> {
         // @ts-ignore

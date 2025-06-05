@@ -1,17 +1,18 @@
-import { DataSchema, DataSchemaInfo, Repository } from "../../storage/index.js";
+import { Class } from "../../lang.js";
+import { DataSchema, DataSchemaInfo } from "../../storage/decorate.js";
+import { Repository } from "../../storage/index.js";
 import { StorageConnection } from "../../storage/options.js";
 import Storage from "../../storage/Storage.js";
+import { Task } from "./index.js";
 import TaskHandle from "./TaskHandle.js";
 import TaskManager from "./TaskManager.js";
 
-export interface Task {
-    (context: TaskContext): void;
-}
-
 export default class TaskContext {
+    /** @internal */
     private readonly mgr: TaskManager;
+    /** @internal */
     private storageConnections: Record<string, StorageConnection> = {};
-
+    /** @internal */
     constructor(mgr: TaskManager) {
         this.mgr = mgr;
     }
@@ -24,6 +25,7 @@ export default class TaskContext {
         return this.getStorage(storage).getRepository(target)
     }
 
+    /** @internal */
     async getStorageConnection(storage: string): Promise<StorageConnection> {
         if (!this.storageConnections[storage]) {
             this.storageConnections[storage] = await this.mgr.getStorage(storage).getConnection()
@@ -31,24 +33,28 @@ export default class TaskContext {
         return this.storageConnections[storage];
     }
 
+    /** @internal */
     async beginTransaction() {
         for (let name in this.storageConnections) {
             await this.storageConnections[name].beginTransaction();
         }
     }
 
+    /** @internal */
     async commit() {
         for (let name in this.storageConnections) {
             await this.storageConnections[name].commit();
         }
     }
 
+    /** @internal */
     async fallback() {
         for (let name in this.storageConnections) {
             await this.storageConnections[name].rollback();
         }
     }
 
+    /** @internal */
     dispose() {
         for (let name in this.storageConnections) {
             this.storageConnections[name].dispose();
@@ -65,9 +71,12 @@ export default class TaskContext {
 }
 
 
-class StorageApi {
+export class StorageApi {
+    /** @internal */
     private readonly storage: Storage
+    /** @internal */
     private readonly context: TaskContext
+    /** @internal */
     constructor(storage: Storage, context: TaskContext) {
         this.storage = storage
         this.context = context

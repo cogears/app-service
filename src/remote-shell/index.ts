@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import fs from 'fs';
 import path from 'path';
-import { HttpError } from "../core/http/HttpError.js";
+import HttpError from "../core/http/HttpError.js";
 import { HttpTask } from "../core/http/index.js";
 import TaskContext from "../core/task/TaskContext.js";
 import AppContext, { http } from '../index.js';
-import { DataSchema } from "../storage/index.js";
+import { DataSchema } from "../storage/decorate.js";
 import { USER_PATH } from "./config.js";
 import * as fileTasks from './file.js';
 import * as storageTasks from './storage.js';
@@ -14,14 +14,12 @@ const commandTasks: Record<string, (context: TaskContext, body: any) => Promise<
     ...storageTasks,
     ...fileTasks,
 }
-
+/** @internal */
 export function startup(context: AppContext, path: string) {
-    if (context.httpManager) {
-        context.httpManager.addRoutes(path, [HelloTask, CommandTask])
-    }
+    context.registerHttpRoutes(path, [HelloTask, CommandTask])
     context.schedule(loadStorages, 0)
 }
-
+/** @internal */
 export async function loadStorages(context: TaskContext) {
     console.info('load dynamic storages...')
     const storages = path.resolve(USER_PATH, 'storages')
@@ -33,7 +31,7 @@ export async function loadStorages(context: TaskContext) {
         await storageTasks.create_table(context, data)
     }
 }
-
+/** @internal */
 export function saveStorage(data: DataSchema<any>) {
     const filepath = path.resolve(USER_PATH, 'storages', data.name)
     fs.writeFileSync(filepath, JSON.stringify(data, undefined, 4), { encoding: 'utf8' })

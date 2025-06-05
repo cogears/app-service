@@ -1,5 +1,6 @@
 import { escape } from "mysql";
-import { DataField, DataSchema, PageOrder, PageRequest } from "../index.js";
+import { DataField, DataSchema } from "../decorate.js";
+import { PageOrder, PageRequest } from "../index.js";
 import * as MysqlField from "./MysqlField.js";
 
 function getFieldDefine(field: DataField, isPrimaryKey: boolean = false) {
@@ -175,5 +176,5 @@ function getOrders(schema: DataSchema<any>, orders: PageOrder[]) {
         .filter(item => item.name)
         .map(order => `\`${order.name}\` ${order.asc ? 'ASC' : 'DESC'}`).join(',');
 }
-
+/** @internal */
 export default new MysqlSqlGenerator()

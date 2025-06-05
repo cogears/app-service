@@ -1,8 +1,8 @@
-declare interface Class<T> {
+export interface Class<T> {
     new(...args: any[]): T
     [index: string]: any
 }
 
-declare interface Method {
+export interface Method {
     (...args: Array<any>): any
 }

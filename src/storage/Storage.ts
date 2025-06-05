@@ -1,8 +1,10 @@
-import { DataSchemaInfo, getSchemas, MysqlConfig, } from "./index.js";
+import { DataSchemaInfo, getSchemas } from "./decorate.js";
+import { MysqlConfig, } from "./index.js";
 import MysqlDriver from "./mysql/MysqlDriver.js";
 import { StorageConnection, StorageDriver } from './options.js';
 import RepositoryFactory from "./RepositoryFactory.js";
 
+/** @internal */
 export default class Storage {
     readonly name: string;
     private driver: StorageDriver;

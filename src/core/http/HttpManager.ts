@@ -1,25 +1,34 @@
 import cors from 'cors';
 import express from 'express';
+import { Class } from '../../lang.js';
 import InternalContext from "../InternalContext.js";
 import TaskContext from '../task/TaskContext.js';
-import { HttpError } from './HttpError.js';
-import { ApiField, ApiInfo, apis, HttpConfig, HttpTask } from './index.js';
+import { ApiField, ApiInfo, apis } from './decorate.js';
+import HttpError from './HttpError.js';
+import { HttpConfig, HttpTask } from './index.js';
 
+/** @internal */
 export default class HttpManager {
     private readonly context: InternalContext
     private readonly server: express.Express
 
-    constructor(context: InternalContext, config: HttpConfig) {
+    constructor(context: InternalContext) {
         this.context = context;
         this.server = express()
+    }
+
+    startup(config: HttpConfig): Promise<void> {
         this.server.use(cors())
         this.server.use(express.json())
         this.server.set('trust proxy', 1)
         if (config.jsonFilter) {
             this.server.set('json replacer', config.jsonFilter)
         }
-        this.server.listen(config.port, () => {
-            console.info('http server startup for', config.port)
+        return new Promise(resolve => {
+            this.server.listen(config.port, () => {
+                console.info('http server startup for', config.port)
+                resolve()
+            })
         })
     }
 
@@ -32,7 +41,7 @@ export default class HttpManager {
                     try {
                         let task = parse(req, info)
                         this.context.schedule(context => {
-                            return executeHttpTask(task, context, req, res)
+                            return this.executeTask(task, context, req, res)
                         })
                     } catch (e: any) {
                         if (e instanceof HttpError) {
@@ -46,25 +55,25 @@ export default class HttpManager {
             }
         }
         this.server.use(path, router)
-        return this
+    }
+
+    private async executeTask(task: HttpTask, context: TaskContext, req: express.Request, res: express.Response) {
+        try {
+            let result = await task.execute(context, req, res)
+            res.send({ code: 0, data: result })
+        } catch (e: any) {
+            console.error(e)
+            if (e instanceof HttpError) {
+                res.send({ code: e.code, data: e.message })
+            } else {
+                res.send({ code: 500, data: e.message })
+            }
+        } finally {
+            res.end()
+        }
     }
 }
 
-async function executeHttpTask(task: HttpTask, context: TaskContext, req: express.Request, res: express.Response) {
-    try {
-        let result = await task.execute(context, req, res)
-        res.send({ code: 0, data: result })
-    } catch (e: any) {
-        console.error(e)
-        if (e instanceof HttpError) {
-            res.send({ code: e.code, data: e.message })
-        } else {
-            res.send({ code: 500, data: e.message })
-        }
-    } finally {
-        res.end()
-    }
-}
 function parse(req: express.Request, info: ApiInfo<any>): HttpTask {
     let task = new info.clazz()
     for (let param of info.params) {
@@ -94,3 +103,6 @@ function fetchValue(obj: any, options: ApiField) {
     }
     return value
 }
+
+
+

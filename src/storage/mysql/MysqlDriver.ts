@@ -12,7 +12,7 @@ const DEFAULT = {
     timezone: '+08:00',
     supportBigNumbers: true,
 };
-
+/** @internal */
 export default class MysqlDriver implements StorageDriver {
     private readonly config: PoolConfig;
     private readonly pool: Pool;

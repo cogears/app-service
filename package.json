@@ -5,9 +5,12 @@
     "type": "module",
     "exports": {
         ".": {
-            "node": "./dist/index-node.js",
-            "browser": "./dist/index-browser.js",
+            "node": "./dist/index.js",
             "types": "./types/index.d.js"
+        },
+        "./browser": {
+            "browser": "./dist/index-browser.js",
+            "types": "./types/index-browser.d.js"
         }
     },
     "files": [

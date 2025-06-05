@@ -1,16 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import { HttpError } from '../core/http/HttpError.js';
+import HttpError from '../core/http/HttpError.js';
 import TaskContext from '../core/task/TaskContext.js';
 import { USER_PATH } from "./config.js";
 
 const CURR_PATH = path.resolve(USER_PATH, 'files')
-
+/** @internal */
 export async function mkdir(_context: TaskContext, { target }: any) {
     const filepath = path.resolve(CURR_PATH, target)
     fs.mkdirSync(filepath, { recursive: true })
 }
-
+/** @internal */
 export async function ls(_context: TaskContext, { target }: any) {
     const filepath = path.resolve(CURR_PATH, target)
     if (!fs.existsSync(filepath)) {
@@ -22,7 +22,7 @@ export async function ls(_context: TaskContext, { target }: any) {
         return [path.basename(filepath)]
     }
 }
-
+/** @internal */
 export async function cp(_context: TaskContext, { source, target }: any) {
     const filepath1 = path.resolve(CURR_PATH, source)
     const filepath2 = path.resolve(CURR_PATH, target)
@@ -35,11 +35,11 @@ export async function cp(_context: TaskContext, { source, target }: any) {
     fs.mkdirSync(path.dirname(filepath2), { recursive: true })
     fs.cpSync(filepath1, filepath2)
 }
-
+/** @internal */
 export async function mv(_context: TaskContext, { source, target }: any) {
     await rename(_context, { source, target })
 }
-
+/** @internal */
 export async function rename(_context: TaskContext, { source, target }: any) {
     const filepath1 = path.resolve(CURR_PATH, source)
     const filepath2 = path.resolve(CURR_PATH, target)
@@ -52,7 +52,7 @@ export async function rename(_context: TaskContext, { source, target }: any) {
     fs.mkdirSync(path.dirname(filepath2), { recursive: true })
     fs.renameSync(filepath1, filepath2)
 }
-
+/** @internal */
 export async function read(_context: TaskContext, { target }: any) {
     const filepath = path.resolve(CURR_PATH, target)
     if (!fs.existsSync(filepath)) {
@@ -63,7 +63,7 @@ export async function read(_context: TaskContext, { target }: any) {
     }
     return fs.readFileSync(filepath, { encoding: 'utf8' })
 }
-
+/** @internal */
 export async function write(_context: TaskContext, { target, data }: any) {
     const filepath = path.resolve(CURR_PATH, target)
     if (fs.existsSync(filepath) && fs.statSync(filepath).isDirectory()) {
@@ -72,7 +72,7 @@ export async function write(_context: TaskContext, { target, data }: any) {
     fs.mkdirSync(path.dirname(filepath), { recursive: true })
     fs.writeFileSync(filepath, data, { encoding: 'utf8' })
 }
-
+/** @internal */
 export async function rm(_context: TaskContext, { target }: any) {
     const filepath = path.resolve(CURR_PATH, target)
     if (fs.existsSync(filepath)) {

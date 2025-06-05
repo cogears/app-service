@@ -1,56 +1,54 @@
-interface EventListener {
+export interface EventListener {
     (event: string, ...args: any[]): any
 }
 
 export default class EventDispatcher {
-    private listeners: Record<string, EventListener[]> = {};
+    /** @internal */
+    private _eventHandlers: Record<string, EventListener[]> = {}
 
-    dispatch(event: string, ...args: Array<any>) {
-        if (this.listeners[event]) {
-            let listeners = this.listeners[event].slice();
-            for (let listener of listeners) {
-                try {
-                    listener(event, ...args);
-                } catch (err) {
-                    console.error(err);
-                }
-            }
+    hasEventListeners(event: string) {
+        return this._eventHandlers[event] && this._eventHandlers[event].length > 0
+    }
+
+    addEventListener(event: string, listener: EventListener) {
+        if (!this._eventHandlers[event]) {
+            this._eventHandlers[event] = []
+        }
+        if (!this._eventHandlers[event].includes(listener)) {
+            this._eventHandlers[event].push(listener)
         }
     }
 
-    addEventListener(eventNames: string, listener: EventListener) {
-        let events = eventNames.split(',').map(s => s.trim());
-        for (let event of events) {
-            if (this.listeners[event]) {
-                if (this.listeners[event].indexOf(listener) == -1) {
-                    this.listeners[event].push(listener);
+    removeEventListener(event: string, listener?: EventListener) {
+        if (this._eventHandlers[event]) {
+            if (listener) {
+                let i = this._eventHandlers[event].indexOf(listener)
+                if (i >= 0) {
+                    this._eventHandlers[event].splice(i, 1)
+                }
+                if (this._eventHandlers[event].length == 0) {
+                    delete this._eventHandlers[event]
                 }
             } else {
-                this.listeners[event] = [listener];
+                delete this._eventHandlers[event]
             }
         }
     }
 
-    removeEventListener(eventNames: string, listener?: EventListener) {
-        let events = eventNames.split(',').map(s => s.trim());
-        for (let event of events) {
-            if (listener) {
-                if (this.listeners[event]) {
-                    let i = this.listeners[event].indexOf(listener);
-                    if (i >= 0) {
-                        this.listeners[event].splice(i, 1);
-                        if (this.listeners[event].length == 0) {
-                            delete this.listeners[event];
-                        }
+    dispatch(event: string, ...args: any[]): boolean {
+        if (this.hasEventListeners(event)) {
+            const listeners = this._eventHandlers[event].slice()
+            setTimeout(() => {
+                for (let listener of listeners) {
+                    try {
+                        listener(event, ...args)
+                    } catch (e) {
+                        console.error(e)
                     }
                 }
-            } else {
-                delete this.listeners[event];
-            }
+            }, 0);
+            return true
         }
-    }
-
-    removeAllEventListeners() {
-        this.listeners = {};
+        return false
     }
 }

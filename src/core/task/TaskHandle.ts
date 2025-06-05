@@ -1,21 +1,17 @@
 import EventDispatcher from "../../common/EventDispatcher.js";
-import { Task } from "./TaskContext.js";
 
 export default class TaskHandle extends EventDispatcher {
     static readonly COMPLETE: string = 'complete'
-    private timer!: any;
-    private isPeriod!: boolean;
+    static readonly SUCCESS: string = 'success'
+    static readonly FAIL: string = 'fail'
+    /** @internal */
+    private readonly timer: NodeJS.Timeout;
+    /** @internal */
     private valid: boolean = true
-    readonly task: Task;
-
-    constructor(task: Task) {
+    /** @internal */
+    constructor(timer: NodeJS.Timeout) {
         super()
-        this.task = task
-    }
-
-    setTimer(timer: NodeJS.Timer, isPeriod: boolean) {
         this.timer = timer
-        this.isPeriod = isPeriod
     }
 
     isValid() {
@@ -24,10 +20,6 @@ export default class TaskHandle extends EventDispatcher {
 
     cancel() {
         this.valid = false
-        if (this.isPeriod) {
-            clearInterval(this.timer);
-        } else {
-            clearTimeout(this.timer);
-        }
+        this.timer.close()
     }
 }

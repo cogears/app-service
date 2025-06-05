@@ -1,5 +1,6 @@
+import { DataSchemaInfo } from "./decorate.js";
 import { criteriaBuilder, CriteriaCondition, predicates } from "./Helper.js";
-import { DataSchemaInfo, EntitySubject, Repository as IRepository, PageRequest, RepeatSql, Repository, Specification, } from "./index.js";
+import { EntitySubject, Repository as IRepository, PageRequest, RepeatSql, Repository, Specification, } from "./index.js";
 import * as Methods from "./Methods.js";
 import { StorageConnection, StorageRepository, StorageRepositoryFactory } from './options.js';
 
@@ -10,10 +11,10 @@ function flatten(array: Array<any>): Array<any> {
 
 interface ProxyObject {
     proxy: Object;
-
     revoke(): void;
 }
 
+/** @internal */
 export default class RepositoryFactory {
     private readonly driverRepositoryFactory: StorageRepositoryFactory;
     private readonly storage: string

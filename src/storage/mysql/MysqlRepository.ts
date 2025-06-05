@@ -1,7 +1,8 @@
-import { DataSchema, PageRequest, RepeatSql, } from "../index.js";
+import { DataSchema } from "../decorate.js";
+import { PageRequest, RepeatSql, } from "../index.js";
 import { StorageConnection, StorageRepository } from '../options.js';
 import generator from "./MysqlSqlGenerator.js";
-
+/** @internal */
 export default class MysqlRepository<T> implements StorageRepository<T> {
     private readonly schema: DataSchema<T>;
 

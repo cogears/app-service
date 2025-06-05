@@ -1,8 +1,8 @@
-import { DataSchema } from "../index.js";
+import { DataSchema } from '../decorate.js';
 import { StorageConnection, StorageRepositoryFactory } from '../options.js';
 import MysqlRepository from "./MysqlRepository.js";
 import generator from "./MysqlSqlGenerator.js";
-
+/** @internal */
 export default class MysqlRepositoryFactory implements StorageRepositoryFactory {
     private async loadTableDescription(connection: StorageConnection, name: string): Promise<string[]> {
         let fields: Array<any> = await connection.query('desc `' + name + '`');

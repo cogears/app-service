@@ -1,5 +1,5 @@
-import { CriteriaBuffer, CriteriaBuilder } from "./index.js";
-
+import { CriteriaBuffer, CriteriaBuilder, EntityFieldPredicate } from "./index.js";
+/** @internal */
 export class CriteriaConnector implements CriteriaBuffer {
     private readonly connector: string;
     private readonly left: CriteriaBuffer
@@ -15,7 +15,7 @@ export class CriteriaConnector implements CriteriaBuffer {
         return '(' + this.left.toString() + ' ' + this.connector + ' ' + this.right.toString() + ')'
     }
 }
-
+/** @internal */
 export class CriteriaCondition implements CriteriaBuffer {
     private readonly content: string;
     constructor(content: string) {
@@ -26,12 +26,11 @@ export class CriteriaCondition implements CriteriaBuffer {
         return this.content
     }
 }
-
+/** @internal */
 export const criteriaBuilder: CriteriaBuilder = {
     blank() {
         return new CriteriaCondition('');
     },
-
     and(left: CriteriaBuffer, right: CriteriaBuffer): CriteriaBuffer {
         return new CriteriaConnector('AND', left, right)
     },
@@ -39,8 +38,8 @@ export const criteriaBuilder: CriteriaBuilder = {
         return new CriteriaConnector('OR', left, right)
     }
 };
-
-export const predicates = {
+/** @internal */
+export const predicates: EntityFieldPredicate = {
     equal(value: any): string {
         return ` = ${value === undefined ? '?' : value}`;
     },
@@ -60,7 +59,7 @@ export const predicates = {
         return ' NOT NULL';
     },
     notNull(): string {
-        return this.isNotNull();
+        return ' NOT NULL';
     },
     like(value: any): string {
         return ` LIKE ${value === undefined ? '?' : value}`;
@@ -82,6 +81,6 @@ export const predicates = {
 for (const func of Object.values(predicates)) {
     let name = func.name;
     Reflect.defineProperty(func, 'name', {
-        value: name[0].toUpperCase() + name.substr(1)
+        value: name[0].toUpperCase() + name.substring(1)
     });
 }

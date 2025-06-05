@@ -14,7 +14,7 @@ function now() {
     let dt = new Date()
     return `${dt.getFullYear()}-${n2(dt.getMonth() + 1)}-${n2(dt.getDate())} ${n2(dt.getHours())}:${n2(dt.getMinutes())}:${n2(dt.getSeconds())}`
 }
-
+/** @internal */
 export default function (logPath: string = '') {
     if (!logPath) {
         logPath = path.join(process.cwd(), 'logs')

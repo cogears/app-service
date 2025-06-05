@@ -12,7 +12,7 @@ export function generateClient(routePath: string = '/'): CallRemote {
 }
 
 
-interface CallRemote {
+export interface CallRemote {
     (cmd: 'mkdir', data: { target: string }): Promise<void>,
     (cmd: 'ls', data: { target: string }): Promise<void>,
     (cmd: 'cp', data: { source: string, target: string }): Promise<void>,
