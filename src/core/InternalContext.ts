@@ -1,4 +1,4 @@
-import AppContext, { Class } from '../index.js';
+import { Class } from '../index.js';
 import { MysqlConfig } from '../storage/index.js';
 import Storage from "../storage/Storage.js";
 import HttpManager from './http/HttpManager.js';
@@ -7,14 +7,13 @@ import LogFactory from './LogFactory.js';
 import { Task, TaskHandle } from './task/index.js';
 import TaskManager from './task/TaskManager.js';
 /** @internal */
-export default class InternalContext extends AppContext {
+export default class InternalContext {
     private _taskManager: TaskManager
     private _httpManager?: HttpManager
     private _storages: Record<string, Storage> = {}
     private _storage?: Storage
     private _waitForStorage: number = 0
     constructor() {
-        super()
         this._taskManager = new TaskManager(this)
     }
 
@@ -78,6 +77,5 @@ export default class InternalContext extends AppContext {
             this._storages[k].dispose()
         }
         this._taskManager.dispose();
-        super.dispose()
     }
 }

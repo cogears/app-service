@@ -6,17 +6,32 @@ import { Class } from "./lang.js";
 import { startup } from "./remote-shell/index.js";
 import { MysqlConfig } from "./storage/index.js";
 
-export default abstract class AppContext {
-    static startup(): AppContext {
-        return new InternalContext()
+export default class AppContext {
+    /** @internal */
+    private instance: InternalContext
+    /** @internal */
+    constructor() {
+        this.instance = new InternalContext()
     }
 
-    abstract installLog(logPath?: string): void;
-    abstract installStorage(config: MysqlConfig): Promise<any>;
-    abstract installHttp(config: HttpConfig): Promise<any>;
-    abstract registerHttpRoutes(path: string, tasks: Class<HttpTask>[]): void
-    abstract schedule(task: Task, delay?: number): TaskHandle;
-    abstract schedulePeriodTask(task: Task, period: number): TaskHandle;
+    installLog(logPath?: string): void {
+        this.instance.installLog(logPath)
+    }
+    installStorage(config: MysqlConfig): Promise<any> {
+        return this.instance.installStorage(config)
+    }
+    installHttp(config: HttpConfig): Promise<any> {
+        return this.instance.installHttp(config)
+    }
+    registerHttpRoutes(path: string, tasks: Class<HttpTask>[]): void {
+        this.instance.registerHttpRoutes(path, tasks)
+    }
+    schedule(task: Task, delay?: number): TaskHandle {
+        return this.schedule(task, delay)
+    }
+    schedulePeriodTask(task: Task, period: number): TaskHandle {
+        return this.schedulePeriodTask(task, period)
+    }
 
     startupRemoteShell(routePath: string = '/') {
         startup(this, routePath)
