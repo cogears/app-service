@@ -27,10 +27,10 @@ export default class AppContext {
         this.instance.registerHttpRoutes(path, tasks)
     }
     schedule(task: Task, delay?: number): TaskHandle {
-        return this.schedule(task, delay)
+        return this.instance.schedule(task, delay)
     }
     schedulePeriodTask(task: Task, period: number): TaskHandle {
-        return this.schedulePeriodTask(task, period)
+        return this.instance.schedulePeriodTask(task, period)
     }
 
     startupRemoteShell(routePath: string = '/') {
