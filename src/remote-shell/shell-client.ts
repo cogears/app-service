@@ -1,5 +1,7 @@
-import http from '@cogears/http-client'
+import Http from '@cogears/http-client'
 import { DataSchema, PageRequest } from '../storage/index.js'
+
+const http = Http()
 
 export function generateClient(routePath: string = '/'): CallRemote {
     if (!routePath.endsWith('/')) {
@@ -7,7 +9,7 @@ export function generateClient(routePath: string = '/'): CallRemote {
     }
     //@ts-ignore
     return function callRemote(command: string, data: any) {
-        return http.post(`${routePath}${command}`, data)
+        return http.post(`${routePath}${command}`, http.json(data))
     }
 }
 
