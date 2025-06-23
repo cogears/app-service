@@ -64,6 +64,10 @@ export default class InternalContext {
         this._httpManager?.addRoutes(path, tasks)
     }
 
+    registerHttpStatic(path: string, directory: string): void {
+        this._httpManager?.setStatic(path, directory)
+    }
+
     schedule(task: Task, delay?: number): TaskHandle {
         return this._taskManager.schedule(task, delay);
     }

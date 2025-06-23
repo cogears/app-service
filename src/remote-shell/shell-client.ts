@@ -7,9 +7,18 @@ export function generateClient(routePath: string = '/'): CallRemote {
     if (!routePath.endsWith('/')) {
         routePath += '/'
     }
-    //@ts-ignore
-    return function callRemote(command: string, data: any) {
-        return http.post(`${routePath}${command}`, http.json(data))
+    return async function callRemote(command: string, data: any) {
+        let response = await http.post(`${routePath}${command}`, http.json(data))
+        if (response.status >= 200 && response.status <= 204) {
+            let result = JSON.parse(response.body)
+            if (result.code == 0) {
+                return result.data
+            } else {
+                throw new Error(`RemoteCall Fail: ${result.code}_` + result.data)
+            }
+        } else {
+            throw new Error(`RemoteCall Fail: ` + response.body)
+        }
     }
 }
 

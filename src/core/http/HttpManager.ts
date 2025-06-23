@@ -32,6 +32,10 @@ export default class HttpManager {
         })
     }
 
+    setStatic(path: string, directory: string) {
+        this.server.use(path, express.static(directory, { cacheControl: false }))
+    }
+
     addRoutes(path: string, tasks: Class<HttpTask>[]) {
         const router = express.Router()
         for (const task of tasks) {

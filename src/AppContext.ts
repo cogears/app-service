@@ -26,6 +26,9 @@ export default class AppContext {
     registerHttpRoutes(path: string, tasks: Class<HttpTask>[]): void {
         this.instance.registerHttpRoutes(path, tasks)
     }
+    registerHttpStatic(path: string, directory: string): void {
+        this.instance.registerHttpStatic(path, directory)
+    }
     schedule(task: Task, delay?: number): TaskHandle {
         return this.instance.schedule(task, delay)
     }
