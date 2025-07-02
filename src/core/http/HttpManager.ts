@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import multer from 'multer';
 import { Class } from '../../lang.js';
 import InternalContext from "../InternalContext.js";
 import TaskContext from '../task/TaskContext.js';
@@ -59,6 +60,30 @@ export default class HttpManager {
             }
         }
         this.server.use(path, router)
+    }
+
+    addUploadRoute(directory: string, path: string, task: Class<HttpTask>) {
+        let info = apis.get(task)
+        if (info) {
+            const router = express.Router()
+            const upload = multer({ dest: directory })
+            router[info.method](info.url, upload.single('file'), (req, res) => {
+                try {
+                    let task = parse(req, info)
+                    this.context.schedule(context => {
+                        return this.executeTask(task, context, req, res)
+                    })
+                } catch (e: any) {
+                    if (e instanceof HttpError) {
+                        res.send({ code: e.code, data: e.message })
+                    } else {
+                        res.send({ code: 500, data: e.message })
+                    }
+                    res.end()
+                }
+            })
+            this.server.use(path, router)
+        }
     }
 
     private async executeTask(task: HttpTask, context: TaskContext, req: express.Request, res: express.Response) {

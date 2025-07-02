@@ -26,6 +26,9 @@ export default class AppContext {
     registerHttpRoutes(path: string, tasks: Class<HttpTask>[]): void {
         this.instance.registerHttpRoutes(path, tasks)
     }
+    registerHttpUpload(directory: string, path: string, task: Class<HttpTask>): void {
+        this.instance.registerHttpUpload(directory, path, task)
+    }
     registerHttpStatic(path: string, directory: string): void {
         this.instance.registerHttpStatic(path, directory)
     }

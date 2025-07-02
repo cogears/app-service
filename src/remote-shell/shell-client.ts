@@ -8,7 +8,14 @@ export function generateClient(routePath: string = '/'): CallRemote {
         routePath += '/'
     }
     return async function callRemote(command: string, data: any) {
-        let response = await http.post(`${routePath}${command}`, http.json(data))
+        let body: any
+        if (command == 'upload') {
+            body = http.file('file', data.file)
+            body.form.append('target', data.target)
+        } else {
+            body = http.json(data)
+        }
+        let response = await http.post(`${routePath}${command}`, body)
         if (response.status >= 200 && response.status <= 204) {
             let result = JSON.parse(response.body)
             if (result.code == 0) {
@@ -32,6 +39,7 @@ export interface CallRemote {
     (cmd: 'read', data: { target: string }): Promise<string>,
     (cmd: 'write', data: { target: string, data: string }): Promise<void>,
     (cmd: 'rm', data: { target: string }): Promise<void>,
+    (cmd: 'upload', data: { target: string, file: File }): Promise<string>
 
     (cmd: 'create-table', data: DataSchema<any>): Promise<void>,
     (cmd: 'clear-table', data: { table: string }): Promise<void>
