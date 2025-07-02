@@ -18,6 +18,7 @@ const commandTasks: Record<string, (context: TaskContext, body: any) => Promise<
 export function startup(context: AppContext, path: string) {
     context.registerHttpUpload(resolve(USER_PATH, 'files/upload'), path, UploadTask)
     context.registerHttpRoutes(path, [HelloTask, CommandTask])
+    context.registerHttpStatic('/remote', resolve(USER_PATH, 'files'))
     context.schedule(loadStorages, 0)
 }
 /** @internal */
