@@ -74,7 +74,7 @@ export default class MysqlRepository<T> implements StorageRepository<T> {
             let field = this.schema.fields.find(item => item.name == k)
             if (field) {
                 instance[field.alias] = data[k]
-            } else {
+            } else if (this.schema.fields.every(item => item.alias != k)) {
                 instance[k] = data[k]
             }
         }
