@@ -127,8 +127,7 @@ function registerMethod(repositoryClass: Class<any>, name: string, sql: string =
     info.methods.push({ name, sql });
 }
 
-/** @internal */
-export function getSchemas(): DataSchemaInfo<any>[] {
+export function getRegisterBindingSchemas(): DataSchemaInfo<any>[] {
     let schemas: DataSchemaInfo<any>[] = [];
     for (let [entityClass, repositoryClass] of binding.entries()) {
         let entity = entities.get(entityClass);
@@ -151,4 +150,8 @@ export function getSchemas(): DataSchemaInfo<any>[] {
         }
     }
     return schemas;
+}
+
+export function getRegisterSchemas(): DataSchema<any>[] {
+    return Array.from(entities.values())
 }

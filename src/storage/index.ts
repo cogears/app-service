@@ -1,5 +1,5 @@
 import TaskContext from "../core/task/TaskContext.js";
-export { DataFieldOptions, DataSchema, DataSchemaOptions, storage } from './decorate.js';
+export { DataFieldOptions, DataSchema, DataSchemaOptions, storage, getRegisterSchemas } from './decorate.js';
 
 export type MysqlConfig = {
     name: string;
@@ -12,7 +12,7 @@ export type MysqlConfig = {
     queueLimit?: number,
 }
 
-export abstract class Repository<T> {
+export class Repository<T> {
     /** @internal */
     private context: TaskContext;
     /** @internal */
@@ -20,24 +20,24 @@ export abstract class Repository<T> {
         this.context = context;
     }
 
-    abstract insert(entity: T): Promise<T>;
+    async insert(entity: T): Promise<T> { return entity }
 
-    abstract update(entity: T): Promise<T>;
+    async update(entity: T): Promise<T> { return entity }
 
-    abstract save(entity: T): Promise<T>;
+    async save(entity: T): Promise<T> { return entity }
 
-    abstract delete(key: any): Promise<void>;
+    async delete(key: any): Promise<void> { }
 
-    abstract clear(): Promise<void>;
+    async clear(): Promise<void> { }
 
-    abstract get(key: any): Promise<T | undefined>;
+    async get(key: any): Promise<T | undefined> { return }
 
-    abstract select(specification?: Specification<T>, pageRequest?: PageRequest): Promise<T[]>;
+    async select(specification?: Specification<T>, pageRequest?: PageRequest): Promise<T[]> { return [] }
 
-    abstract count(specification?: Specification<T>): Promise<number>;
+    async count(specification?: Specification<T>): Promise<number> { return 0 }
 
-    abstract generateRepeat(): RepeatSql<T>;
-    abstract submitRepeat(repeat: RepeatSql<T>): Promise<void>;
+    generateRepeat(): RepeatSql<T> { return undefined as any }
+    async submitRepeat(repeat: RepeatSql<T>): Promise<void> { }
 }
 
 export interface Specification<T> {

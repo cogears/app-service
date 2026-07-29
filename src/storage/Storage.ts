@@ -1,5 +1,5 @@
-import { DataSchemaInfo, getSchemas } from "./decorate.js";
-import { MysqlConfig, } from "./index.js";
+import { DataSchemaInfo, getRegisterBindingSchemas } from "./decorate.js";
+import { MysqlConfig } from "./index.js";
 import MysqlDriver from "./mysql/MysqlDriver.js";
 import { StorageConnection, StorageDriver } from './options.js';
 import RepositoryFactory from "./RepositoryFactory.js";
@@ -19,7 +19,7 @@ export default class Storage {
 
     async initialize() {
         let connection = await this.getConnection();
-        let schemaInfos: DataSchemaInfo<any>[] = getSchemas();
+        let schemaInfos: DataSchemaInfo<any>[] = getRegisterBindingSchemas();
         schemaInfos = schemaInfos.filter(item => item.storage == this.name)
         for (let schema of schemaInfos) {
             await this.registerRepository(connection, schema);

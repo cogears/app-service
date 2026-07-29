@@ -7,11 +7,13 @@ import TaskContext from '../task/TaskContext.js';
 import { ApiField, ApiInfo, apis } from './decorate.js';
 import HttpError from './HttpError.js';
 import { HttpConfig, HttpTask } from './index.js';
+import { Server } from 'http';
 
 /** @internal */
 export default class HttpManager {
     private readonly context: InternalContext
     private readonly server: express.Express
+    private serverInstace?: Server
 
     constructor(context: InternalContext) {
         this.context = context;
@@ -26,11 +28,18 @@ export default class HttpManager {
             this.server.set('json replacer', config.jsonFilter)
         }
         return new Promise(resolve => {
-            this.server.listen(config.port, () => {
+            this.serverInstace = this.server.listen(config.port, () => {
                 console.info('http server startup for', config.port)
                 resolve()
             })
         })
+    }
+
+    dispose() {
+        if (this.serverInstace) {
+            this.serverInstace.close()
+            this.serverInstace = undefined
+        }
     }
 
     setStatic(path: string, directory: string) {

@@ -44,5 +44,6 @@ export default class AppContext {
     }
 
     dispose(): void {
+        this.instance.dispose()
     }
 }

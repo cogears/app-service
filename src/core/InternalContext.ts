@@ -81,9 +81,12 @@ export default class InternalContext {
     }
 
     dispose(): void {
+        if (this._httpManager) {
+            this._httpManager.dispose()
+        }
+        this._taskManager.dispose();
         for (let k in this._storages) {
             this._storages[k].dispose()
         }
-        this._taskManager.dispose();
     }
 }

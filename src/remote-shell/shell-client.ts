@@ -3,11 +3,14 @@ import { DataSchema, PageRequest } from '../storage/index.js'
 
 const http = Http()
 
-export function generateClient(routePath: string = '/'): CallRemote {
-    if (!routePath.endsWith('/')) {
-        routePath += '/'
+export class ShellClient {
+    /** @internal */
+    private readonly routePath: string
+    constructor(routePath: string = '/') {
+        this.routePath = routePath
     }
-    return async function callRemote(command: string, data: any) {
+
+    async sendRequest(command: string, data: any) {
         let body: any
         if (command == 'upload') {
             body = http.file('file', data.file)
@@ -15,7 +18,7 @@ export function generateClient(routePath: string = '/'): CallRemote {
         } else {
             body = http.json(data)
         }
-        let response = await http.post(`${routePath}${command}`, body)
+        let response = await http.post(`${this.routePath}${command}`, body)
         if (response.status >= 200 && response.status <= 204) {
             let result = JSON.parse(response.body)
             if (result.code == 0) {
@@ -27,26 +30,72 @@ export function generateClient(routePath: string = '/'): CallRemote {
             throw new Error(`RemoteCall Fail: ` + response.body)
         }
     }
-}
 
+    mkdir(target: string) {
+        return this.sendRequest('mkdir', { target })
+    }
 
-export interface CallRemote {
-    (cmd: 'mkdir', data: { target: string }): Promise<void>,
-    (cmd: 'ls', data: { target: string }): Promise<void>,
-    (cmd: 'cp', data: { source: string, target: string }): Promise<void>,
-    (cmd: 'mv', data: { source: string, target: string }): Promise<void>,
-    (cmd: 'rename', data: { source: string, target: string }): Promise<void>,
-    (cmd: 'read', data: { target: string }): Promise<string>,
-    (cmd: 'write', data: { target: string, data: string }): Promise<void>,
-    (cmd: 'rm', data: { target: string }): Promise<void>,
-    (cmd: 'upload', data: { target: string, file: File }): Promise<string>
+    ls(target: string) {
+        return this.sendRequest('ls', { target })
+    }
 
-    (cmd: 'create-table', data: DataSchema<any>): Promise<void>,
-    (cmd: 'clear-table', data: { table: string }): Promise<void>
-    (cmd: 'insert-data', data: { table: string, data: any }): Promise<void>
-    (cmd: 'update-data', data: { table: string, data: any }): Promise<void>
-    (cmd: 'save-data', data: { table: string, data: any }): Promise<void>
-    (cmd: 'delete-data', data: { table: string, key: any }): Promise<void>
-    (cmd: 'get-data', data: { table: string, key: any }): Promise<any>
-    (cmd: 'select-data', data: { table: string, pageRequest: PageRequest }): Promise<any[]>
+    cp(source: string, target: string) {
+        return this.sendRequest('cp', { source, target })
+    }
+
+    mv(source: string, target: string) {
+        return this.sendRequest('mv', { source, target })
+    }
+
+    rename(source: string, target: string) {
+        return this.sendRequest('rename', { source, target })
+    }
+
+    read(target: string) {
+        return this.sendRequest('read', { target })
+    }
+
+    write(target: string, data: string) {
+        return this.sendRequest('write', { target, data })
+    }
+
+    rm(target: string) {
+        return this.sendRequest('rm', { target })
+    }
+
+    upload(target: string, file: File) {
+        return this.sendRequest('upload', { target, file })
+    }
+
+    createTable(data: DataSchema<any>) {
+        return this.sendRequest('create-table', data)
+    }
+
+    clearTable(table: string) {
+        return this.sendRequest('clear-table', { table })
+    }
+
+    insertData(table: string, data: any) {
+        return this.sendRequest('insert-data', { table, data })
+    }
+
+    updateData(table: string, data: any) {
+        return this.sendRequest('update-data', { table, data })
+    }
+
+    saveData(table: string, data: any) {
+        return this.sendRequest('save-data', { table, data })
+    }
+
+    deleteData(table: string, key: any) {
+        return this.sendRequest('delete-data', { table, key })
+    }
+
+    getData(table: string, key: any) {
+        return this.sendRequest('get-data', { table, key })
+    }
+
+    selectData(table: string, pageRequest: PageRequest) {
+        return this.sendRequest('select-data', { table, pageRequest })
+    }
 }
