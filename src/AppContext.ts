@@ -26,8 +26,8 @@ export default class AppContext {
     registerHttpRoutes(path: string, tasks: Class<HttpTask>[]): void {
         this.instance.registerHttpRoutes(path, tasks)
     }
-    registerHttpUpload(directory: string, path: string, task: Class<HttpTask>): void {
-        this.instance.registerHttpUpload(directory, path, task)
+    registerHttpUpload(path: string, directory: string, task: Class<HttpTask>): void {
+        this.instance.registerHttpUpload(path, directory, task)
     }
     registerHttpStatic(path: string, directory: string): void {
         this.instance.registerHttpStatic(path, directory)
@@ -39,8 +39,8 @@ export default class AppContext {
         return this.instance.schedulePeriodTask(task, period)
     }
 
-    startupRemoteShell(routePath: string = '/') {
-        startup(this, routePath)
+    startupRemoteShell(workspace: string, routePath: string = '/') {
+        startup(this, workspace, routePath)
     }
 
     dispose(): void {

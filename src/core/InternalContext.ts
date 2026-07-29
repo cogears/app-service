@@ -64,8 +64,8 @@ export default class InternalContext {
         this._httpManager?.addRoutes(path, tasks)
     }
 
-    registerHttpUpload(directory: string, path: string, task: Class<HttpTask>) {
-        this._httpManager?.addUploadRoute(directory, path, task)
+    registerHttpUpload(path: string, directory: string, task: Class<HttpTask>) {
+        this._httpManager?.addUploadRoute(path, directory, task)
     }
 
     registerHttpStatic(path: string, directory: string): void {

@@ -1,0 +1,68 @@
+import fs from 'fs';
+import path from 'path';
+import HttpError from '../core/http/HttpError.js';
+import TaskContext from "../core/task/TaskContext.js";
+import { DataSchema } from "../storage/decorate.js";
+import { JobWorker } from './ShellWorker.js';
+import { FileWorker } from './workers/file.js';
+import { StorageWorker } from "./workers/storage.js";
+
+/** @internal */
+export class ShellServer {
+    static TAG = '[shell]'
+    private readonly workspace: string
+    private readonly fileWorker: FileWorker
+    private readonly storageWorker: StorageWorker
+    private readonly jobWorkers: JobWorker[]
+
+    constructor(workspace: string) {
+        this.workspace = workspace
+        this.fileWorker = new FileWorker(workspace + '/io')
+        this.storageWorker = new StorageWorker()
+        this.jobWorkers = [this.fileWorker, this.storageWorker]
+    }
+
+    get storageDir() {
+        return path.resolve(this.workspace, 'storage')
+    }
+
+    async loadStorages(context: TaskContext) {
+        const dirpath = this.storageDir
+        console.info(ShellServer.TAG, 'load dynamic storages from', dirpath)
+        fs.mkdirSync(dirpath, { recursive: true })
+        const files = fs.readdirSync(dirpath)
+        for (let file of files) {
+            let text = fs.readFileSync(path.join(dirpath, file), { encoding: 'utf8' })
+            let data = JSON.parse(text)
+            await this.storageWorker.createTable(context, data)
+        }
+    }
+
+    async saveStorage(data: DataSchema<any>) {
+        const filepath = path.join(this.storageDir, data.name)
+        fs.writeFileSync(filepath, JSON.stringify(data, undefined, 4), { encoding: 'utf8' })
+        console.info(ShellServer.TAG, 'save storage', filepath)
+    }
+
+    uploadFile(context: TaskContext, source: string, target: string) {
+        this.fileWorker.rm(context, { target })
+        this.fileWorker.mv(context, { source, target })
+        return target
+    }
+
+    async executeCommand(context: TaskContext, command: string, data: any): Promise<any> {
+        for (const worker of this.jobWorkers) {
+            if (worker[command]) {
+                const result = await worker[command](context, data)
+                if (command == 'createTable') {
+                    this.saveStorage(data)
+                }
+                return result || {}
+            }
+        }
+        throw new HttpError(404, 'unknow command: ' + command)
+    }
+}
+
+
+

@@ -71,34 +71,34 @@ export class ShellClient {
     }
 
     createTable(data: DataSchema<any>) {
-        return this.sendRequest('create-table', data)
+        return this.sendRequest('createTable', data)
     }
 
     clearTable(table: string) {
-        return this.sendRequest('clear-table', { table })
+        return this.sendRequest('clearTable', { table })
     }
 
     insertData(table: string, data: any) {
-        return this.sendRequest('insert-data', { table, data })
+        return this.sendRequest('insertData', { table, data })
     }
 
     updateData(table: string, data: any) {
-        return this.sendRequest('update-data', { table, data })
+        return this.sendRequest('updateData', { table, data })
     }
 
     saveData(table: string, data: any) {
-        return this.sendRequest('save-data', { table, data })
+        return this.sendRequest('saveData', { table, data })
     }
 
     deleteData(table: string, key: any) {
-        return this.sendRequest('delete-data', { table, key })
+        return this.sendRequest('deleteData', { table, key })
     }
 
     getData(table: string, key: any) {
-        return this.sendRequest('get-data', { table, key })
+        return this.sendRequest('getData', { table, key })
     }
 
     selectData(table: string, pageRequest: PageRequest) {
-        return this.sendRequest('select-data', { table, pageRequest })
+        return this.sendRequest('selectData', { table, pageRequest })
     }
 }

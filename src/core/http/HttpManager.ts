@@ -71,7 +71,7 @@ export default class HttpManager {
         this.server.use(path, router)
     }
 
-    addUploadRoute(directory: string, path: string, task: Class<HttpTask>) {
+    addUploadRoute(path: string, directory: string, task: Class<HttpTask>) {
         let info = apis.get(task)
         if (info) {
             const router = express.Router()
