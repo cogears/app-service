@@ -7,6 +7,9 @@ export class ShellClient {
     /** @internal */
     private readonly routePath: string
     constructor(routePath: string = '/') {
+        if (!routePath.endsWith('/')) {
+            routePath += '/'
+        }
         this.routePath = routePath
     }
 
