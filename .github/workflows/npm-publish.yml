@@ -3,6 +3,10 @@
 
 name: Node.js Package
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   workflow_dispatch:
 
@@ -17,7 +21,5 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish --access public --provenance
           
