@@ -39,6 +39,9 @@ export class StorageWorker extends ShellWorker {
     }
 
     async selectData(context: TaskContext, { table, pageRequest }: any) {
-        return await context.getStorageRepository(table).select(undefined, pageRequest)
+        const repository = context.getStorageRepository(table)
+        let list = await repository.select(undefined, pageRequest)
+        let count = await repository.count(undefined)
+        return { count, list }
     }
 }
