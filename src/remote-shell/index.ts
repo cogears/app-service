@@ -15,8 +15,8 @@ export function startup(context: AppContext, workspace: string, uri: string) {
     console.info(ShellServer.TAG, 'startup shell server on', workspace, uri)
     server = new ShellServer(workspace)
 
-    context.registerHttpStatic(uri + '/static', path.resolve(workspace, 'static'))
-    context.registerHttpUpload(uri, path.resolve(workspace, 'static/upload'), UploadTask)
+    context.registerHttpStatic(uri + '/static', server.staticDir)
+    context.registerHttpUpload(uri, server.staticDir, UploadTask)
     context.registerHttpRoutes(uri, [HelloTask, CommandTask])
     context.schedule(taskContext => {
         server.loadStorages(taskContext)
@@ -60,7 +60,7 @@ class UploadTask implements HttpTask {
 
     async execute(context: TaskContext, req: Request, res: Response): Promise<any> {
         if (req.file) {
-            const source = 'upload/' + req.file.filename
+            const source = req.file.filename
             const target = req.body.target
             if (target) {
                 return server.uploadFile(context, source, target)

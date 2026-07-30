@@ -17,13 +17,17 @@ export class ShellServer {
 
     constructor(workspace: string) {
         this.workspace = workspace
-        this.fileWorker = new FileWorker(workspace + '/io')
+        this.fileWorker = new FileWorker(this.staticDir)
         this.storageWorker = new StorageWorker()
         this.jobWorkers = [this.fileWorker, this.storageWorker]
     }
 
+    get staticDir() {
+        return path.join(this.workspace, 'static')
+    }
+
     get storageDir() {
-        return path.resolve(this.workspace, 'storage')
+        return path.join(this.workspace, 'storage')
     }
 
     async loadStorages(context: TaskContext) {
