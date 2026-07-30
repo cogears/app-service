@@ -32,9 +32,9 @@ export class ShellServer {
 
     async loadStorages(context: TaskContext) {
         const dirpath = this.storageDir
-        console.info(ShellServer.TAG, 'load dynamic storages from', dirpath)
         fs.mkdirSync(dirpath, { recursive: true })
         const files = fs.readdirSync(dirpath)
+        console.info(ShellServer.TAG, 'load dynamic storages from', dirpath, files)
         for (let file of files) {
             let text = fs.readFileSync(path.join(dirpath, file), { encoding: 'utf8' })
             let data = JSON.parse(text)
@@ -48,10 +48,9 @@ export class ShellServer {
         console.info(ShellServer.TAG, 'save storage', filepath)
     }
 
-    uploadFile(context: TaskContext, source: string, target: string) {
-        this.fileWorker.rm(context, { target })
-        this.fileWorker.mv(context, { source, target })
-        return target
+    async uploadFile(context: TaskContext, source: string, target: string) {
+        await this.fileWorker.rm(context, { target })
+        await this.fileWorker.mv(context, { source, target })
     }
 
     async executeCommand(context: TaskContext, command: string, data: any): Promise<any> {

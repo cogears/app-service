@@ -1,6 +1,6 @@
 import HttpError from "../../core/http/HttpError.js";
 import TaskContext from "../../core/task/TaskContext.js";
-import { DataSchema } from "../../storage/decorate.js";
+import { DataSchema, Specification } from "../../storage/index.js";
 import { ShellWorker } from "../ShellWorker.js";
 
 /** @internal */
@@ -38,10 +38,20 @@ export class StorageWorker extends ShellWorker {
         throw new HttpError(404, 'not found')
     }
 
-    async selectData(context: TaskContext, { table, pageRequest }: any) {
+    async selectData(context: TaskContext, { table, pageRequest, query }: any) {
         const repository = context.getStorageRepository(table)
-        let list = await repository.select(undefined, pageRequest)
-        let total = await repository.count(undefined)
+        let specification: Specification<any> | undefined = undefined
+        if (query) {
+            specification = function (criteriaBuilder, subject) {
+                let buff = criteriaBuilder.blank()
+                for (let k in query) {
+                    buff = criteriaBuilder.and(buff, subject[k].equal(query[k]))
+                }
+                return buff
+            }
+        }
+        let list = await repository.select(specification, pageRequest)
+        let total = await repository.count(specification)
         return { total, list }
     }
 }

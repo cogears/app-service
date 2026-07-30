@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import os from 'os';
 import path from 'path';
 import HttpError from "../core/http/HttpError.js";
-import { HttpTask } from "../core/http/index.js";
+import { HttpTask, } from "../core/http/index.js";
 import TaskContext from "../core/task/TaskContext.js";
 import AppContext, { http } from '../index.js';
 import { ShellServer } from "./shell-server.js";
-import os from 'os';
 
 let server: ShellServer
 
@@ -63,11 +63,12 @@ class UploadTask implements HttpTask {
             const source = req.file.filename
             const target = req.body.target
             if (target) {
-                return server.uploadFile(context, source, target)
+                await server.uploadFile(context, source, target)
+                return target
             } else {
                 return source
             }
         }
-        return 'ok'
+        return ''
     }
 }

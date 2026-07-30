@@ -38,7 +38,7 @@ export class ShellClient {
         return this.sendRequest('mkdir', { target })
     }
 
-    ls(target: string) {
+    ls(target: string): Promise<Array<RemoteFile>> {
         return this.sendRequest('ls', { target })
     }
 
@@ -66,8 +66,8 @@ export class ShellClient {
         return this.sendRequest('rm', { target })
     }
 
-    upload(target: string, file: File) {
-        return this.sendRequest('upload', { target, file })
+    upload(target: string, file: File, description?: string) {
+        return this.sendRequest('upload', { target, file, description })
     }
 
     createTable(data: DataSchema<any>) {
@@ -101,4 +101,12 @@ export class ShellClient {
     selectData(table: string, pageRequest: PageRequest) {
         return this.sendRequest('selectData', { table, pageRequest })
     }
+}
+
+export interface RemoteFile {
+    filepath: string,
+    isDirectory: boolean,
+    size: number,
+    ctime: number,
+    mtime: number
 }
