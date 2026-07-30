@@ -3,6 +3,7 @@ import path from 'path';
 import HttpError from '../../core/http/HttpError.js';
 import TaskContext from '../../core/task/TaskContext.js';
 import { ShellWorker } from '../ShellWorker.js';
+import { RemoteFile } from '../shell-client.js';
 
 /** @internal */
 export class FileWorker extends ShellWorker {
@@ -11,6 +12,10 @@ export class FileWorker extends ShellWorker {
     constructor(workspace: string) {
         super()
         this.workspace = workspace
+    }
+
+    async tree(_context: TaskContext) {
+        return loadDir('', this.workspace)
     }
 
     async mkdir(_context: TaskContext, { target }: any) {
@@ -25,9 +30,9 @@ export class FileWorker extends ShellWorker {
         }
         if (fs.statSync(filepath).isDirectory()) {
             let files = fs.readdirSync(filepath)
-            return files.map(file => this.getFileStat(path.join(filepath, file)))
+            return files.map(file => getFileStat(path.join(filepath, file), this.workspace))
         } else {
-            return [this.getFileStat(filepath)]
+            return [getFileStat(filepath, this.workspace)]
         }
     }
 
@@ -87,16 +92,26 @@ export class FileWorker extends ShellWorker {
             fs.rmSync(filepath)
         }
     }
+}
 
-    //@ts-ignore
-    private getFileStat(filepath: string) {
-        const stat = fs.statSync(filepath)
-        return {
-            filepath: path.relative(this.workspace, filepath),
-            isDirectory: stat.isDirectory(),
-            size: stat.size,
-            ctime: stat.ctimeMs,
-            mtime: stat.mtimeMs
-        }
+function getFileStat(filepath: string, basedir: string): RemoteFile {
+    const stat = fs.statSync(filepath)
+    return {
+        filepath: path.relative(basedir, filepath),
+        name: path.basename(filepath),
+        isDirectory: stat.isDirectory(),
+        size: stat.size,
+        ctime: stat.ctimeMs,
+        mtime: stat.mtimeMs,
+        children: [],
     }
+}
+
+function loadDir(dirpath: string, basedir: string) {
+    dirpath = path.join(basedir, dirpath)
+    const dirs = fs.readdirSync(dirpath).map(file => getFileStat(path.join(dirpath, file), basedir)).filter(file => file.isDirectory)
+    for (let dir of dirs) {
+        dir.children = loadDir(dir.filepath, basedir)
+    }
+    return dirs
 }
