@@ -1,7 +1,4 @@
-import Http from '@cogears/http-client'
 import { DataSchema, PageRequest } from '../storage/index.js'
-
-const http = Http()
 
 export class ShellClient {
     /** @internal */
@@ -14,16 +11,23 @@ export class ShellClient {
     }
 
     async sendRequest(command: string, data: any) {
-        let body: any
-        if (command == 'upload') {
-            body = http.file('file', data.file)
-            body.form.append('target', data.target)
-        } else {
-            body = http.json(data)
+        let options: RequestInit = {
+            method: 'post'
         }
-        let response = await http.post(`${this.routePath}${command}`, body)
-        if (response.status >= 200 && response.status <= 204) {
-            let result = JSON.parse(response.body)
+        if (command == 'upload') {
+            const formData = new FormData();
+            formData.append('file', data.file);
+            formData.append('target', data.target);
+            options.body = formData
+        } else {
+            options.headers = {
+                'Content-Type': 'application/json'
+            }
+            options.body = JSON.stringify(data)
+        }
+        const response = await fetch(`${this.routePath}${command}`, options)
+        if (response.ok) {
+            const result = await response.json();
             if (result.code == 0) {
                 return result.data
             } else {
@@ -35,12 +39,11 @@ export class ShellClient {
     }
 
     async downloadStatic(target: string): Promise<Blob> {
-        let response = await http.get(`${this.routePath}static/${target}`, {}, { 'responseType': 'blob' })
-        if (response.status >= 200 && response.status <= 204) {
-            return response.body
-        } else {
-            throw new Error(`Download Fail: ` + response.body)
+        const response = await fetch(`${this.routePath}static/${target}`)
+        if (response.ok) {
+            return await response.blob()
         }
+        throw new Error(`Download Fail: ` + response.body)
     }
 
     tree(): Promise<RemoteFile[]> {
