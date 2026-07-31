@@ -34,6 +34,15 @@ export class ShellClient {
         }
     }
 
+    async downloadStatic(target: string): Promise<Blob> {
+        let response = await http.get(`${this.routePath}static/${target}`, {}, { 'responseType': 'blob' })
+        if (response.status >= 200 && response.status <= 204) {
+            return response.body
+        } else {
+            throw new Error(`Download Fail: ` + response.body)
+        }
+    }
+
     tree(): Promise<RemoteFile[]> {
         return this.sendRequest('tree', {})
     }
@@ -72,6 +81,10 @@ export class ShellClient {
 
     upload(target: string, file: File) {
         return this.sendRequest('upload', { target, file })
+    }
+
+    download(target: string): Promise<Blob> {
+        return this.downloadStatic(target)
     }
 
     createTable(data: DataSchema<any>) {
@@ -115,4 +128,5 @@ export interface RemoteFile {
     ctime: number,
     mtime: number,
     children: RemoteFile[],
+    content?: any
 }
