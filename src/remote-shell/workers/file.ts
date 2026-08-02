@@ -5,7 +5,6 @@ import TaskContext from '../../core/task/TaskContext.js';
 import { ShellWorker } from '../ShellWorker.js';
 import { RemoteFile } from '../shell-client.js';
 
-/** @internal */
 export class FileWorker extends ShellWorker {
     //@ts-ignore
     private readonly workspace: string

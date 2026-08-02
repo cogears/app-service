@@ -118,8 +118,8 @@ export class ShellClient {
         return this.sendRequest('getData', { table, key })
     }
 
-    selectData(table: string, pageRequest: PageRequest) {
-        return this.sendRequest('selectData', { table, pageRequest })
+    selectData(table: string, pageRequest: PageRequest, query: any) {
+        return this.sendRequest('selectData', { table, pageRequest, query })
     }
 }
 

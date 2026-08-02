@@ -4,11 +4,6 @@ interface Job {
     (context: TaskContext, data: any): Promise<any>
 }
 
-export interface JobWorker {
-    [index: string]: Job
-}
-
-/** @internal */
-export class ShellWorker implements JobWorker {
+export class ShellWorker {
     [index: string]: Job;
 }

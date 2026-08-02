@@ -3,12 +3,15 @@ import InternalContext from "./core/InternalContext.js";
 import { Task } from "./core/task/index.js";
 import TaskHandle from "./core/task/TaskHandle.js";
 import { Class } from "./lang.js";
-import { startup } from "./remote-shell/index.js";
+import { ShellServer } from "./remote-shell/index.js";
+import { startup } from "./remote-shell/startup.js";
 import { MysqlConfig } from "./storage/index.js";
 
 export default class AppContext {
     /** @internal */
     private instance: InternalContext
+
+    shell?: ShellServer
     /** @internal */
     constructor() {
         this.instance = new InternalContext()
@@ -39,8 +42,9 @@ export default class AppContext {
         return this.instance.schedulePeriodTask(task, period)
     }
 
-    startupRemoteShell(workspace: string, routePath: string = '/') {
-        startup(this, workspace, routePath)
+    startupRemoteShell(workspace: string, routePath: string = '/'): ShellServer {
+        this.shell = startup(this, workspace, routePath)
+        return this.shell
     }
 
     dispose(): void {

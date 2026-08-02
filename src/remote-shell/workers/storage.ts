@@ -3,7 +3,6 @@ import TaskContext from "../../core/task/TaskContext.js";
 import { DataSchema, Specification } from "../../storage/index.js";
 import { ShellWorker } from "../ShellWorker.js";
 
-/** @internal */
 export class StorageWorker extends ShellWorker {
     async createTable(context: TaskContext, data: DataSchema<any>) {
         data.writable = true

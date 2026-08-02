@@ -3,18 +3,20 @@ import path from 'path';
 import HttpError from '../core/http/HttpError.js';
 import TaskContext from "../core/task/TaskContext.js";
 import { DataSchema } from "../storage/decorate.js";
-import { JobWorker } from './ShellWorker.js';
+import { ShellWorker } from './ShellWorker.js';
 import { FileWorker } from './workers/file.js';
 import { StorageWorker } from "./workers/storage.js";
 
-/** @internal */
 export class ShellServer {
+    /** @internal */
     static TAG = '[shell]'
-    private readonly workspace: string
-    private readonly fileWorker: FileWorker
-    private readonly storageWorker: StorageWorker
-    private readonly jobWorkers: JobWorker[]
+    readonly workspace: string
+    readonly fileWorker: FileWorker
+    readonly storageWorker: StorageWorker
+    /** @internal */
+    private readonly jobWorkers: ShellWorker[]
 
+    /** @internal */
     constructor(workspace: string) {
         this.workspace = workspace
         this.fileWorker = new FileWorker(this.staticDir)
@@ -30,6 +32,11 @@ export class ShellServer {
         return path.join(this.workspace, 'storage')
     }
 
+    registerJobWorker(worker: ShellWorker) {
+        this.jobWorkers.push(worker)
+    }
+
+    /** @internal */
     async loadStorages(context: TaskContext) {
         const dirpath = this.storageDir
         fs.mkdirSync(dirpath, { recursive: true })
@@ -42,17 +49,20 @@ export class ShellServer {
         }
     }
 
+    /** @internal */
     async saveStorage(data: DataSchema<any>) {
         const filepath = path.join(this.storageDir, data.name)
         fs.writeFileSync(filepath, JSON.stringify(data, undefined, 4), { encoding: 'utf8' })
         console.info(ShellServer.TAG, 'save storage', filepath)
     }
 
+    /** @internal */
     async uploadFile(context: TaskContext, source: string, target: string) {
         await this.fileWorker.rm(context, { target })
         await this.fileWorker.mv(context, { source, target })
     }
 
+    /** @internal */
     async executeCommand(context: TaskContext, command: string, data: any): Promise<any> {
         for (const worker of this.jobWorkers) {
             if (worker[command]) {
@@ -66,6 +76,4 @@ export class ShellServer {
         throw new HttpError(404, 'unknow command: ' + command)
     }
 }
-
-
 
